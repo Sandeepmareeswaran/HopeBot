@@ -31,13 +31,9 @@ const calmingRecommendationsPrompt = ai.definePrompt({
   name: 'calmingRecommendationsPrompt',
   input: {schema: CalmingRecommendationsInputSchema},
   output: {schema: CalmingRecommendationsOutputSchema},
-  prompt: `You are a mental health expert. A user is feeling {{{mood}}} and sent the following message: {{{message}}}.  Based on their mood and message, suggest some calming exercises and CBT (Cognitive Behavioral Therapy) prompts.
+  prompt: `You are a mental health expert. A user is feeling {{{mood}}} and sent the following message: {{{message}}}. Based on their mood and message, suggest some calming exercises and CBT (Cognitive Behavioral Therapy) prompts.
 
-Calming Exercises:
-- (List calming exercise suggestions)
-
-CBT Prompts:
-- (List CBT prompt suggestions)`,
+Return your answer as a JSON object with two keys: 'calmingExercises' and 'cbtPrompts', which are arrays of strings.`,
 });
 
 const calmingRecommendationsFlow = ai.defineFlow(

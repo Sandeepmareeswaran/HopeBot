@@ -47,6 +47,7 @@ export async function handleUserMessage(userInput: string): Promise<BotResponse>
       responseText = humanResponseResult.response;
     } catch (error) {
       console.error('Error in humanLikeResponse flow:', error);
+      // This is a critical failure, we will fall back to a safe response.
       responseText = "I'm having a little trouble formulating a full response right now, but I'm still here to listen. Could you tell me more about what's on your mind?";
     }
 
