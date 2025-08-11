@@ -31,57 +31,57 @@ const mockDailyRecords = Array.from({ length: 365 }, (_, i) => {
 function calculateStreaks(records: { date: string; timeSpent: number }[]) {
   let currentStreak = 0;
   let longestStreak = 0;
+  
+  if (records.length === 0) {
+    return { currentStreak: 0, longestStreak: 0 };
+  }
+
   let today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // Check if today has activity for current streak
-  const todayRecord = records.find(r => {
-      const recordDate = new Date(r.date);
-      recordDate.setHours(0,0,0,0);
-      return recordDate.getTime() === today.getTime() && r.timeSpent > 0;
+  // Use a map for quick lookups
+  const recordsMap = new Map<string, number>();
+  records.forEach(r => {
+    const recordDate = new Date(r.date);
+    recordDate.setHours(0, 0, 0, 0);
+    recordsMap.set(recordDate.toISOString().split('T')[0], r.timeSpent);
   });
 
-  if (todayRecord) {
-      currentStreak = 1;
-  }
-
-  // Iterate backwards from yesterday
-  for (let i = records.length - (todayRecord ? 2 : 1); i >= 0; i--) {
-    if (records[i].timeSpent > 0) {
-      if (currentStreak > 0) {
-          // check if consecutive
-          const prevDate = new Date(records[i+1].date);
-          prevDate.setHours(0,0,0,0)
-          const currDate = new Date(records[i].date);
-          currDate.setHours(0,0,0,0);
-          
-          if ((prevDate.getTime() - currDate.getTime()) / (1000 * 3600 * 24) === 1) {
-              currentStreak++;
-          } else {
-              break; // not consecutive
-          }
-      } else {
-        // start of a new streak. Since we are calculating current streak from today, this path shouldn't be taken for current streak
-      }
-    } else if (currentStreak > 0) {
-        break;
-    }
+  // Calculate current streak
+  let currentDate = new Date(today);
+  while (recordsMap.has(currentDate.toISOString().split('T')[0]) && (recordsMap.get(currentDate.toISOString().split('T')[0]) ?? 0) > 0) {
+    currentStreak++;
+    currentDate.setDate(currentDate.getDate() - 1);
   }
 
   // Calculate longest streak
   let localCurrentStreak = 0;
-  for (let i = 0; i < records.length; i++) {
-    if (records[i].timeSpent > 0) {
-      localCurrentStreak++;
-    } else {
-      if (localCurrentStreak > longestStreak) {
-        longestStreak = localCurrentStreak;
+  // Sort dates to ensure they are in order
+  const sortedDates = Array.from(recordsMap.keys()).sort((a,b) => new Date(a).getTime() - new Date(b).getTime());
+
+  if (sortedDates.length > 0) {
+      localCurrentStreak = (recordsMap.get(sortedDates[0]) ?? 0) > 0 ? 1 : 0;
+      longestStreak = localCurrentStreak;
+
+      for (let i = 1; i < sortedDates.length; i++) {
+        const d1 = new Date(sortedDates[i-1]);
+        const d2 = new Date(sortedDates[i]);
+        const diffDays = (d2.getTime() - d1.getTime()) / (1000 * 3600 * 24);
+
+        if ((recordsMap.get(sortedDates[i]) ?? 0) > 0) {
+            if (diffDays === 1) {
+                localCurrentStreak++;
+            } else {
+                localCurrentStreak = 1; // Streak broken, start new one
+            }
+        } else {
+            localCurrentStreak = 0; // No activity, reset
+        }
+
+        if (localCurrentStreak > longestStreak) {
+            longestStreak = localCurrentStreak;
+        }
       }
-      localCurrentStreak = 0;
-    }
-  }
-  if (localCurrentStreak > longestStreak) {
-    longestStreak = localCurrentStreak;
   }
 
 
@@ -94,13 +94,16 @@ const StreakChart = ({
 }: {
   data: { date: string; timeSpent: number }[];
 }) => {
+  if (!data || data.length === 0) {
+      return <div className="text-center text-muted-foreground">No activity data to display.</div>
+  }
   const weeks = [];
   // Ensure we start on a Sunday
   const startDate = new Date(data[0].date);
   const dayOfWeek = startDate.getDay();
   // Create empty placeholders for days before the start date in that week
   for (let i = 0; i < dayOfWeek; i++) {
-    weeks.push({ date: 'empty', timeSpent: -1 });
+    weeks.push({ date: `empty-${i}`, timeSpent: -1 });
   }
 
   for (const record of data) {
@@ -108,18 +111,21 @@ const StreakChart = ({
   }
 
   const getTooltipText = (record: { date: string; timeSpent: number }) => {
+    const date = new Date(record.date);
+    if (isNaN(date.getTime())) return "Invalid date";
+    
     if (record.timeSpent > 0) {
-      return `${record.timeSpent} minutes on ${new Date(record.date).toLocaleDateString()}`;
+      return `${record.timeSpent} minutes on ${date.toLocaleDateString()}`;
     }
-    return `No activity on ${new Date(record.date).toLocaleDateString()}`;
+    return `No activity on ${date.toLocaleDateString()}`;
   };
 
   return (
     <TooltipProvider>
       <div className="grid grid-cols-7 gap-1 md:grid-cols-53 md:grid-rows-7 md:grid-flow-col">
         {weeks.map((record, index) =>
-          record.date === 'empty' ? (
-            <div key={`empty-${index}`} className="w-4 h-4" />
+          record.date.startsWith('empty') ? (
+            <div key={record.date} className="w-4 h-4" />
           ) : (
             <Tooltip key={record.date}>
               <TooltipTrigger asChild>
@@ -235,3 +241,5 @@ function ProfilePage() {
 }
 
 export default ProfilePage;
+
+    
