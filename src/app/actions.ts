@@ -6,6 +6,8 @@ import { humanLikeResponse, type HumanLikeResponseOutput } from '@/ai/flows/huma
 // It matches the 'HumanLikeResponseOutput' from the AI flow.
 export type BotResponse = HumanLikeResponseOutput;
 
+// A list of keywords that might indicate a user is in crisis.
+// This is a basic check and should not be considered a comprehensive safety system.
 const crisisKeywords = [
   'suicide', 'kill myself', 'i want to die', 'end my life', 'ending it all',
   'no reason to live', 'take my own life', 'self-harm', 'hopeless and want to end it'
