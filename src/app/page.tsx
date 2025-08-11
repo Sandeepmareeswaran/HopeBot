@@ -2,8 +2,12 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { HopeBotLogo } from '@/components/icons/hope-bot-logo';
 import { ArrowRight } from 'lucide-react';
+import { auth } from '@clerk/nextjs/server';
 
 export default function LandingPage() {
+  const { userId } = auth();
+  const href = userId ? '/chat' : '/sign-in';
+
   return (
     <main className="flex h-full w-full flex-col items-center justify-center bg-background p-4">
       <div className="flex flex-col items-center justify-center text-center space-y-6 max-w-lg">
@@ -15,7 +19,7 @@ export default function LandingPage() {
           Your friendly, AI-powered companion for mental wellness. Here to listen, support, and guide you through challenging moments.
         </p>
         <Button asChild size="lg" className="group">
-          <Link href="/chat">
+          <Link href={href}>
             Get Started
             <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
           </Link>

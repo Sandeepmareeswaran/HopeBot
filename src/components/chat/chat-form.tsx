@@ -33,7 +33,6 @@ export function ChatForm({
           onChange={handleInputChange}
           placeholder="How are you feeling today?"
           rows={1}
-          maxRows={5}
           className="w-full pr-24 py-3 resize-none"
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
