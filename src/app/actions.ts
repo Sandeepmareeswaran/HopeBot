@@ -1,7 +1,7 @@
 'use server';
 
-import { detectMood } from '@/ai/flows/mood-detection';
-import { humanLikeResponse } from '@/ai/flows/human-like-response';
+import { detectMood, DetectMoodOutput } from '@/ai/flows/mood-detection';
+import { humanLikeResponse, HumanLikeResponseOutput } from '@/ai/flows/human-like-response';
 import { calmingRecommendations, CalmingRecommendationsOutput } from '@/ai/flows/calming-recommendations';
 import { getFirestore, collection, getDocs, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { app } from '@/lib/firebase';
@@ -39,24 +39,35 @@ export async function handleUserMessage(userInput: string): Promise<BotResponse>
       };
     }
     
-    const [moodResult, humanResponseResult] = await Promise.all([
+    const [moodResult, humanResponseResult] = await Promise.allSettled([
       detectMood({ text: userInput }),
       humanLikeResponse({ userInput }),
     ]);
 
-    let recommendationsResult: CalmingRecommendationsOutput | null = null;
-    const mood = moodResult.mood.toLowerCase();
-
-    if (['sad', 'anxious', 'angry', 'stressed', 'overwhelmed', 'low'].some(m => mood.includes(m))) {
-      recommendationsResult = await calmingRecommendations({
-        mood: moodResult.mood,
-        message: userInput,
-      });
+    if (humanResponseResult.status === 'rejected') {
+      console.error('Error in humanLikeResponse flow:', humanResponseResult.reason);
+      throw new Error('Failed to generate a response.');
     }
+    
+    const responseText = humanResponseResult.value.response;
+    let recommendationsResult: CalmingRecommendationsOutput | null = null;
+    
+    if (moodResult.status === 'fulfilled') {
+      const mood = moodResult.value.mood.toLowerCase();
+      if (['sad', 'anxious', 'angry', 'stressed', 'overwhelmed', 'low'].some(m => mood.includes(m))) {
+        recommendationsResult = await calmingRecommendations({
+          mood: moodResult.value.mood,
+          message: userInput,
+        });
+      }
+    } else {
+        console.error('Error in detectMood flow:', moodResult.reason);
+    }
+
 
     return {
       type: 'botResponse',
-      response: humanResponseResult.response,
+      response: responseText,
       recommendations: recommendationsResult,
     };
   } catch (error) {
