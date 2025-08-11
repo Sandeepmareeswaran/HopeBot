@@ -29,11 +29,9 @@ const prompt = ai.definePrompt({
   name: 'humanLikeResponsePrompt',
   input: {schema: HumanLikeResponseInputSchema},
   output: {schema: HumanLikeResponseOutputSchema},
-  prompt: `You are a mental health companion named HopeBot, designed to provide supportive and empathetic responses to users.
-  Avoid using overly formal or robotic language. Instead, use a conversational tone that makes the user feel comfortable and understood.
-  Your goal is to provide a human-like interaction that fosters a sense of connection and trust.
-  Respond to the following user input:
-  {{{userInput}}}`,
+  prompt: `You are a mental health companion named HopeBot. Your goal is to provide supportive and empathetic responses. Use a conversational and caring tone.
+Respond to the following user input:
+{{{userInput}}}`,
 });
 
 const humanLikeResponseFlow = ai.defineFlow(

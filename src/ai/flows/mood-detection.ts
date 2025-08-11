@@ -16,9 +16,7 @@ const DetectMoodInputSchema = z.object({
 export type DetectMoodInput = z.infer<typeof DetectMoodInputSchema>;
 
 const DetectMoodOutputSchema = z.object({
-  mood: z.string().describe('The detected mood of the text.'),
-  reason: z.string().optional().describe('Possible reasons for the detected mood.'),
-  suggestedResponse: z.string().optional().describe('A suggestion for an optimistic or grateful response.'),
+  mood: z.string().describe('A one or two word description of the detected mood of the text (e.g., "sad", "anxious", "frustrated").'),
 });
 export type DetectMoodOutput = z.infer<typeof DetectMoodOutputSchema>;
 
@@ -30,7 +28,7 @@ const prompt = ai.definePrompt({
   name: 'detectMoodPrompt',
   input: {schema: DetectMoodInputSchema},
   output: {schema: DetectMoodOutputSchema},
-  prompt: `You are a mood detection expert. Analyze the following text for its emotional tone.  If the mood seems low, mention possible reasons, and then consider a response with optimism or gratitude.\n\nText: {{{text}}}`,
+  prompt: `Analyze the following text for its primary emotional tone. Describe the mood in one or two words.\n\nText: {{{text}}}`,
 });
 
 const detectMoodFlow = ai.defineFlow(

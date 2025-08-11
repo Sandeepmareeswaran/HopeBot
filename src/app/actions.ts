@@ -47,21 +47,33 @@ export async function handleUserMessage(userInput: string): Promise<BotResponse>
   } catch (error) {
     console.error('Error in humanLikeResponse flow:', error);
     responseText = "I'm having a little trouble formulating a full response right now, but I'm still here to listen. Could you tell me more about what's on your mind?";
+    
+    // Even if the primary response fails, we return immediately with the fallback.
+    // We won't proceed to other flows to avoid further errors.
+    return {
+      type: 'botResponse',
+      response: responseText,
+      recommendations: null,
+    };
   }
 
   try {
+    // Now, detect mood based on the original user input.
     const moodResult = await detectMood({ text: userInput });
     const mood = moodResult.mood.toLowerCase();
     
-    if (['sad', 'anxious', 'angry', 'stressed', 'overwhelmed', 'low'].some(m => mood.includes(m))) {
+    // Check if the detected mood warrants recommendations.
+    if (['sad', 'anxious', 'angry', 'stressed', 'overwhelmed', 'low', 'depressed', 'frustrated', 'scared'].some(m => mood.includes(m))) {
       recommendationsResult = await calmingRecommendations({
         mood: moodResult.mood,
         message: userInput,
       });
     }
   } catch (error) {
-    console.error('Error in detectMood or calmingRecommendations flow:', error);
-    // We can continue without recommendations if this part fails.
+    // If mood detection or recommendations fail, we can still proceed with the main response.
+    // We log the error but don't show an error to the user.
+    console.error('Error in mood detection or calming recommendations flow:', error);
+    recommendationsResult = null;
   }
 
   return {
