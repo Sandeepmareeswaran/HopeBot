@@ -1,18 +1,14 @@
 'use server';
 
-import { detectMood, DetectMoodOutput } from '@/ai/flows/mood-detection';
-import { humanLikeResponse, HumanLikeResponseOutput } from '@/ai/flows/human-like-response';
-import { calmingRecommendations, CalmingRecommendationsOutput } from '@/ai/flows/calming-recommendations';
+import { humanLikeResponse, type HumanLikeResponseOutput } from '@/ai/flows/human-like-response';
 import { getFirestore, collection, getDocs, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { app } from '@/lib/firebase';
 
 const db = getFirestore(app);
 
-export interface BotResponse {
-  type: 'botResponse' | 'crisis';
-  response: string;
-  recommendations: CalmingRecommendationsOutput | null;
-}
+// This is the primary response object returned to the frontend.
+// It matches the 'HumanLikeResponseOutput' from the AI flow.
+export type BotResponse = HumanLikeResponseOutput;
 
 export interface DailyRecord {
   date: string;
@@ -31,61 +27,38 @@ function isCrisis(message: string): boolean {
 
 export async function handleUserMessage(userInput: string): Promise<BotResponse> {
   try {
+    // Immediately check for crisis keywords. This is a critical safety feature.
     if (isCrisis(userInput)) {
       return {
-        type: 'crisis',
         response: "It sounds like you are going through a difficult time. Please know that there is help available. You can connect with people who can support you by calling or texting 988 in the US and Canada, or calling 111 in the UK, anytime.",
         recommendations: null,
       };
     }
 
-    let responseText: string;
-    let recommendationsResult: CalmingRecommendationsOutput | null = null;
-
-    try {
-      const humanResponseResult = await humanLikeResponse({ userInput });
-      responseText = humanResponseResult.response;
-    } catch (error) {
-      console.error('Error in humanLikeResponse flow:', error);
-      // This is a critical failure, we will fall back to a safe response.
-      responseText = "I'm having a little trouble formulating a full response right now, but I'm still here to listen. Could you tell me more about what's on your mind?";
-    }
-
-    try {
-      // Now, detect mood based on the original user input.
-      const moodResult = await detectMood({ text: userInput });
-      const mood = moodResult.mood.toLowerCase();
-      
-      // Check if the detected mood warrants recommendations.
-      if (['sad', 'anxious', 'angry', 'stressed', 'overwhelmed', 'low', 'depressed', 'frustrated', 'scared'].some(m => mood.includes(m))) {
-        recommendationsResult = await calmingRecommendations({
-          mood: moodResult.mood,
-          message: userInput,
-        });
-      }
-    } catch (error) {
-      // If mood detection or recommendations fail, we can still proceed with the main response.
-      // We log the error but don't show an error to the user.
-      console.error('Error in mood detection or calming recommendations flow:', error);
-      recommendationsResult = null;
+    // Call the single, consolidated AI flow.
+    const result = await humanLikeResponse({ userInput });
+    
+    // Ensure the result and its properties are not null before returning.
+    // The AI flow is designed to always return this structure, but this is a defensive check.
+    if (!result || !result.response) {
+       throw new Error("AI flow returned an invalid response.");
     }
 
     return {
-      type: 'botResponse',
-      response: responseText,
-      recommendations: recommendationsResult,
+        response: result.response,
+        recommendations: result.recommendations,
     };
+
   } catch (error) {
-    console.error('Unhandled error in handleUserMessage:', error);
-    // Final fallback to ensure a response is always sent.
+    console.error('Fatal error in handleUserMessage:', error);
+    // This is the ultimate fallback. If anything in the try block fails,
+    // we return a safe, static response, ensuring the server action never crashes.
     return {
-      type: 'botResponse',
       response: "I'm having a little trouble formulating a full response right now, but I'm still here to listen. Could you tell me more about what's on your mind?",
       recommendations: null,
     };
   }
 }
-
 
 export async function getRecordsForUser(userEmail: string): Promise<DailyRecord[]> {
   try {

@@ -135,12 +135,17 @@ export function ChatInterface() {
 
     const result = await handleUserMessage(userInput);
     
-    if (!result) {
+    // Add a defensive check to ensure the result is valid before proceeding.
+    // The backend action is now designed to always return a valid object, but this prevents client-side crashes.
+    if (!result || !result.response) {
         toast({
             title: "Error",
-            description: "Failed to get a response from the server.",
+            description: "An unexpected error occurred. Please try again.",
             variant: "destructive",
         });
+        // Remove the user's message if the bot fails, to allow them to retry.
+        setMessages((prev) => prev.slice(0, prev.length -1));
+        setInput(userInput); // Restore user input
         setIsLoading(false);
         return;
     }
@@ -150,17 +155,17 @@ export function ChatInterface() {
         <p>{result.response}</p>
         {result.recommendations && (
           <div className="mt-4 space-y-3">
-            {result.recommendations.calmingExercises.length > 0 && (
+            {result.recommendations.calmingExercises?.length > 0 && (
               <div>
-                <h4 className="font-semibold text-sm mb-1">Calming Exercises:</h4>
+                <h4 className="font-semibold text-sm mb-1">Here are a few calming exercises you could try:</h4>
                 <ul className="list-disc list-inside text-sm space-y-1">
                   {result.recommendations.calmingExercises.map((ex, i) => <li key={`ex-${i}`}>{ex}</li>)}
                 </ul>
               </div>
             )}
-            {result.recommendations.cbtPrompts.length > 0 && (
-               <div>
-                <h4 className="font-semibold text-sm mb-1">Mindful Prompts:</h4>
+            {result.recommendations.cbtPrompts?.length > 0 && (
+               <div className="mt-3">
+                <h4 className="font-semibold text-sm mb-1">Here are some prompts to reflect on:</h4>
                 <ul className="list-disc list-inside text-sm space-y-1">
                   {result.recommendations.cbtPrompts.map((p, i) => <li key={`p-${i}`}>{p}</li>)}
                 </ul>
