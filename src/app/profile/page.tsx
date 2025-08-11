@@ -17,63 +17,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { getFirestore, collection, getDocs, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
-import { app } from '@/lib/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
-
-const db = getFirestore(app);
-
-export interface DailyRecord {
-  date: string;
-  timeSpent: number; // in seconds
-}
-
-async function getRecordsForUser(userId: string): Promise<DailyRecord[]> {
-  try {
-    const querySnapshot = await getDocs(collection(db, 'userActivity', userId, 'records'));
-    const recordsMap = new Map<string, number>();
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      recordsMap.set(doc.id, data.timeSpent || 0);
-    });
-
-    const allDays: DailyRecord[] = [];
-    const today = new Date();
-    const oneYearAgo = new Date(today);
-    oneYearAgo.setDate(today.getDate() - 364);
-
-    for (let d = new Date(oneYearAgo); d <= today; d.setDate(d.getDate() + 1)) {
-      const dateStr = d.toISOString().split('T')[0];
-      allDays.push({
-        date: dateStr,
-        timeSpent: recordsMap.get(dateStr) || 0,
-      });
-    }
-    return allDays;
-  } catch (error) {
-    console.error("Failed to fetch activity data from Firestore", error);
-    return [];
-  }
-}
-
-async function storeRecordForUser(userId: string, timeSpentInSeconds: number) {
-  if (!userId || timeSpentInSeconds <= 0) return;
-  
-  const todayStr = new Date().toISOString().split('T')[0];
-  const recordRef = doc(db, 'userActivity', userId, 'records', todayStr);
-
-  try {
-    const docSnap = await getDoc(recordRef);
-    if (docSnap.exists()) {
-      const newTime = (docSnap.data().timeSpent || 0) + timeSpentInSeconds;
-      await updateDoc(recordRef, { timeSpent: newTime });
-    } else {
-      await setDoc(recordRef, { timeSpent: timeSpentInSeconds, date: todayStr });
-    }
-  } catch (error) {
-    console.error("Failed to save activity data to Firestore", error);
-  }
-}
+import { DailyRecord, getRecordsForUser, storeRecordForUser } from '@/app/actions';
 
 function calculateStreaks(records: DailyRecord[]) {
     if (!records || records.length === 0) {
@@ -109,11 +54,9 @@ function calculateStreaks(records: DailyRecord[]) {
 
   let currentStreak = 0;
   const today = new Date();
-  let tempDate = new Date(today);
   
-  if (activeDays.has(tempDate.toISOString().split('T')[0])) {
-      currentStreak = 1;
-      tempDate.setDate(tempDate.getDate() - 1);
+  if (activeDays.has(today.toISOString().split('T')[0])) {
+      let tempDate = new Date(today);
       while(activeDays.has(tempDate.toISOString().split('T')[0])) {
           currentStreak++;
           tempDate.setDate(tempDate.getDate() - 1);
@@ -291,5 +234,3 @@ function ProfilePage() {
 }
 
 export default ProfilePage;
-
-    
