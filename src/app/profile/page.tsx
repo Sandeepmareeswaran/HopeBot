@@ -136,36 +136,38 @@ function ProfilePage() {
   const [dailyRecords, setDailyRecords] = useState<DailyRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const loadData = useCallback(async (userId: string) => {
+  const loadData = useCallback(async (userEmail: string) => {
     setIsLoading(true);
-    const records = await getRecordsForUser(userId);
+    const records = await getRecordsForUser(userEmail);
     setDailyRecords(records);
     setStreaks(calculateStreaks(records));
     setIsLoading(false);
   }, []);
 
   useEffect(() => {
-    if (user?.id) {
-      loadData(user.id);
+    const userEmail = user?.emailAddresses[0]?.emailAddress;
+    if (userEmail) {
+      loadData(userEmail);
     }
-  }, [user?.id, loadData]);
+  }, [user?.emailAddresses, loadData]);
 
   // Track time spent
   useEffect(() => {
-    if (!user?.id) return;
+    const userEmail = user?.emailAddresses[0]?.emailAddress;
+    if (!userEmail) return;
 
     const startTime = Date.now();
     const handleBeforeUnload = async () => {
       const endTime = Date.now();
       const timeSpentInSeconds = Math.round((endTime - startTime) / 1000);
       if (timeSpentInSeconds > 0) {
-        await storeRecordForUser(user.id, timeSpentInSeconds);
+        await storeRecordForUser(userEmail, timeSpentInSeconds);
       }
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [user?.id]);
+  }, [user?.emailAddresses]);
 
   return (
     <div className="flex flex-col h-full">

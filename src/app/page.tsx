@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { HopeBotLogo } from '@/components/icons/hope-bot-logo';
 import { ArrowRight, Clock } from 'lucide-react';
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { getTotalTimeSpentForUser } from '@/app/actions';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -20,11 +20,12 @@ function formatTime(seconds: number) {
 
 export default async function LandingPage() {
   const { userId } = auth();
+  const user = await currentUser();
   const href = userId ? '/chat' : '/sign-in';
   let totalTimeSpent = 0;
 
-  if (userId) {
-    totalTimeSpent = await getTotalTimeSpentForUser(userId);
+  if (user && user.emailAddresses[0]?.emailAddress) {
+    totalTimeSpent = await getTotalTimeSpentForUser(user.emailAddresses[0].emailAddress);
   }
 
   return (

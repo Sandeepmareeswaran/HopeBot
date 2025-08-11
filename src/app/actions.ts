@@ -69,9 +69,9 @@ export async function handleUserMessage(userInput: string): Promise<BotResponse>
   }
 }
 
-export async function getRecordsForUser(userId: string): Promise<DailyRecord[]> {
+export async function getRecordsForUser(userEmail: string): Promise<DailyRecord[]> {
   try {
-    const querySnapshot = await getDocs(collection(db, 'userActivity', userId, 'records'));
+    const querySnapshot = await getDocs(collection(db, 'userActivity', userEmail, 'records'));
     const recordsMap = new Map<string, number>();
     querySnapshot.forEach((doc) => {
       const data = doc.data();
@@ -97,9 +97,10 @@ export async function getRecordsForUser(userId: string): Promise<DailyRecord[]> 
   }
 }
 
-export async function getTotalTimeSpentForUser(userId: string): Promise<number> {
+export async function getTotalTimeSpentForUser(userEmail: string): Promise<number> {
+  if (!userEmail) return 0;
   try {
-    const querySnapshot = await getDocs(collection(db, 'userActivity', userId, 'records'));
+    const querySnapshot = await getDocs(collection(db, 'userActivity', userEmail, 'records'));
     let totalTime = 0;
     querySnapshot.forEach((doc) => {
       totalTime += doc.data().timeSpent || 0;
@@ -111,11 +112,11 @@ export async function getTotalTimeSpentForUser(userId: string): Promise<number> 
   }
 }
 
-export async function storeRecordForUser(userId: string, timeSpentInSeconds: number) {
-  if (!userId || timeSpentInSeconds <= 0) return;
+export async function storeRecordForUser(userEmail: string, timeSpentInSeconds: number) {
+  if (!userEmail || timeSpentInSeconds <= 0) return;
   
   const todayStr = new Date().toISOString().split('T')[0];
-  const recordRef = doc(db, 'userActivity', userId, 'records', todayStr);
+  const recordRef = doc(db, 'userActivity', userEmail, 'records', todayStr);
 
   try {
     const docSnap = await getDoc(recordRef);

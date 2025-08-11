@@ -32,7 +32,8 @@ export function ChatInterface() {
 
   // Track time spent on chat page
   useEffect(() => {
-    if (!user?.id) return;
+    const userEmail = user?.emailAddresses[0]?.emailAddress;
+    if (!userEmail) return;
   
     const startTime = Date.now();
     let lastSaveTime = Date.now();
@@ -41,7 +42,7 @@ export function ChatInterface() {
       const now = Date.now();
       const timeSpentInSeconds = Math.round((now - lastSaveTime) / 1000);
       if (timeSpentInSeconds > 0) {
-        await storeRecordForUser(user.id, timeSpentInSeconds);
+        await storeRecordForUser(userEmail, timeSpentInSeconds);
         lastSaveTime = now;
       }
     }, 10000); // Save every 10 seconds
@@ -50,7 +51,7 @@ export function ChatInterface() {
       const endTime = Date.now();
       const timeSpentInSeconds = Math.round((endTime - lastSaveTime) / 1000);
       if (timeSpentInSeconds > 0) {
-        await storeRecordForUser(user.id, timeSpentInSeconds);
+        await storeRecordForUser(userEmail, timeSpentInSeconds);
       }
     };
   
@@ -61,7 +62,7 @@ export function ChatInterface() {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       handleBeforeUnload(); // Save any remaining time when component unmounts
     };
-  }, [user?.id]);
+  }, [user?.emailAddresses]);
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
