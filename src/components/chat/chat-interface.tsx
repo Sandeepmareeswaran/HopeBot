@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useRef, useEffect, type FormEvent, type ChangeEvent } from 'react';
+import { useUser } from '@clerk/nextjs';
 import { useToast } from "@/hooks/use-toast"
-import { handleUserMessage, type BotResponse } from '@/app/actions';
+import { handleUserMessage, storeRecordForUser, type BotResponse } from '@/app/actions';
 import { MessageList } from './message-list';
 import { ChatForm } from './chat-form';
 
@@ -27,6 +28,40 @@ export function ChatInterface() {
   const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const { toast } = useToast();
+  const { user } = useUser();
+
+  // Track time spent on chat page
+  useEffect(() => {
+    if (!user?.id) return;
+  
+    const startTime = Date.now();
+    let lastSaveTime = Date.now();
+  
+    const saveInterval = setInterval(async () => {
+      const now = Date.now();
+      const timeSpentInSeconds = Math.round((now - lastSaveTime) / 1000);
+      if (timeSpentInSeconds > 0) {
+        await storeRecordForUser(user.id, timeSpentInSeconds);
+        lastSaveTime = now;
+      }
+    }, 10000); // Save every 10 seconds
+  
+    const handleBeforeUnload = async () => {
+      const endTime = Date.now();
+      const timeSpentInSeconds = Math.round((endTime - lastSaveTime) / 1000);
+      if (timeSpentInSeconds > 0) {
+        await storeRecordForUser(user.id, timeSpentInSeconds);
+      }
+    };
+  
+    window.addEventListener('beforeunload', handleBeforeUnload);
+  
+    return () => {
+      clearInterval(saveInterval);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      handleBeforeUnload(); // Save any remaining time when component unmounts
+    };
+  }, [user?.id]);
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
