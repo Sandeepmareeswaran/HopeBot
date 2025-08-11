@@ -29,63 +29,65 @@ const mockDailyRecords = Array.from({ length: 365 }, (_, i) => {
 }).reverse();
 
 function calculateStreaks(records: { date: string; timeSpent: number }[]) {
-  let currentStreak = 0;
-  let longestStreak = 0;
-  
   if (records.length === 0) {
     return { currentStreak: 0, longestStreak: 0 };
   }
 
-  let today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  // Use a map for quick lookups
-  const recordsMap = new Map<string, number>();
+  const recordsMap = new Map<string, boolean>();
   records.forEach(r => {
-    const recordDate = new Date(r.date);
-    recordDate.setHours(0, 0, 0, 0);
-    recordsMap.set(recordDate.toISOString().split('T')[0], r.timeSpent);
+    if (r.timeSpent > 0) {
+      recordsMap.set(r.date, true);
+    }
   });
 
-  // Calculate current streak
-  let currentDate = new Date(today);
-  while (recordsMap.has(currentDate.toISOString().split('T')[0]) && (recordsMap.get(currentDate.toISOString().split('T')[0]) ?? 0) > 0) {
-    currentStreak++;
-    currentDate.setDate(currentDate.getDate() - 1);
+  const sortedDates = Array.from(recordsMap.keys()).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+  
+  if(sortedDates.length === 0) {
+    return { currentStreak: 0, longestStreak: 0 };
   }
 
-  // Calculate longest streak
-  let localCurrentStreak = 0;
-  // Sort dates to ensure they are in order
-  const sortedDates = Array.from(recordsMap.keys()).sort((a,b) => new Date(a).getTime() - new Date(b).getTime());
+  let longestStreak = 0;
+  let currentStreak = 0;
 
-  if (sortedDates.length > 0) {
-      localCurrentStreak = (recordsMap.get(sortedDates[0]) ?? 0) > 0 ? 1 : 0;
-      longestStreak = localCurrentStreak;
+  for (let i = 0; i < sortedDates.length; i++) {
+    const currentDate = new Date(sortedDates[i]);
+    currentDate.setHours(0,0,0,0);
 
-      for (let i = 1; i < sortedDates.length; i++) {
-        const d1 = new Date(sortedDates[i-1]);
-        const d2 = new Date(sortedDates[i]);
-        const diffDays = (d2.getTime() - d1.getTime()) / (1000 * 3600 * 24);
-
-        if ((recordsMap.get(sortedDates[i]) ?? 0) > 0) {
-            if (diffDays === 1) {
-                localCurrentStreak++;
-            } else {
-                localCurrentStreak = 1; // Streak broken, start new one
-            }
-        } else {
-            localCurrentStreak = 0; // No activity, reset
-        }
-
-        if (localCurrentStreak > longestStreak) {
-            longestStreak = localCurrentStreak;
-        }
+    if (i > 0) {
+      const prevDate = new Date(sortedDates[i-1]);
+      prevDate.setHours(0,0,0,0);
+      const diffDays = (currentDate.getTime() - prevDate.getTime()) / (1000 * 3600 * 24);
+      if (diffDays === 1) {
+        currentStreak++;
+      } else {
+        currentStreak = 1;
+      }
+    } else {
+      currentStreak = 1;
+    }
+    if (currentStreak > longestStreak) {
+      longestStreak = currentStreak;
+    }
+  }
+  
+  let todayStreak = 0;
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const todayStr = today.toISOString().split('T')[0];
+  
+  if (recordsMap.has(todayStr)) {
+      todayStreak = 1;
+      let yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      
+      while(recordsMap.has(yesterday.toISOString().split('T')[0])) {
+          todayStreak++;
+          yesterday.setDate(yesterday.getDate() - 1);
       }
   }
 
 
-  return { currentStreak, longestStreak };
+  return { currentStreak: todayStreak, longestStreak };
 }
 
 
@@ -123,7 +125,7 @@ const StreakChart = ({
   return (
     <TooltipProvider>
       <div className="grid grid-cols-7 gap-1 md:grid-cols-53 md:grid-rows-7 md:grid-flow-col">
-        {weeks.map((record, index) =>
+        {weeks.map((record) =>
           record.date.startsWith('empty') ? (
             <div key={record.date} className="w-4 h-4" />
           ) : (
@@ -241,5 +243,3 @@ function ProfilePage() {
 }
 
 export default ProfilePage;
-
-    
