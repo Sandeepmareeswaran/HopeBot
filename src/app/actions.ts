@@ -30,55 +30,47 @@ function isCrisis(message: string): boolean {
 }
 
 export async function handleUserMessage(userInput: string): Promise<BotResponse> {
-  try {
-    if (isCrisis(userInput)) {
-      return {
-        type: 'crisis',
-        response: "It sounds like you are going through a difficult time. Please know that there is help available. You can connect with people who can support you by calling or texting 988 in the US and Canada, or calling 111 in the UK, anytime.",
-        recommendations: null,
-      };
-    }
-    
-    const [moodResult, humanResponseResult] = await Promise.allSettled([
-      detectMood({ text: userInput }),
-      humanLikeResponse({ userInput }),
-    ]);
-
-    if (humanResponseResult.status === 'rejected') {
-      console.error('Error in humanLikeResponse flow:', humanResponseResult.reason);
-      throw new Error('Failed to generate a response.');
-    }
-    
-    const responseText = humanResponseResult.value.response;
-    let recommendationsResult: CalmingRecommendationsOutput | null = null;
-    
-    if (moodResult.status === 'fulfilled') {
-      const mood = moodResult.value.mood.toLowerCase();
-      if (['sad', 'anxious', 'angry', 'stressed', 'overwhelmed', 'low'].some(m => mood.includes(m))) {
-        recommendationsResult = await calmingRecommendations({
-          mood: moodResult.value.mood,
-          message: userInput,
-        });
-      }
-    } else {
-        console.error('Error in detectMood flow:', moodResult.reason);
-    }
-
-
+  if (isCrisis(userInput)) {
     return {
-      type: 'botResponse',
-      response: responseText,
-      recommendations: recommendationsResult,
-    };
-  } catch (error) {
-    console.error('Error handling user message:', error);
-    return {
-      type: 'botResponse',
-      response: 'I apologize, but I encountered an error. Please try again in a moment.',
+      type: 'crisis',
+      response: "It sounds like you are going through a difficult time. Please know that there is help available. You can connect with people who can support you by calling or texting 988 in the US and Canada, or calling 111 in the UK, anytime.",
       recommendations: null,
     };
   }
+
+  let responseText: string;
+  let recommendationsResult: CalmingRecommendationsOutput | null = null;
+
+  try {
+    const humanResponseResult = await humanLikeResponse({ userInput });
+    responseText = humanResponseResult.response;
+  } catch (error) {
+    console.error('Error in humanLikeResponse flow:', error);
+    responseText = "I'm having a little trouble formulating a full response right now, but I'm still here to listen. Could you tell me more about what's on your mind?";
+  }
+
+  try {
+    const moodResult = await detectMood({ text: userInput });
+    const mood = moodResult.mood.toLowerCase();
+    
+    if (['sad', 'anxious', 'angry', 'stressed', 'overwhelmed', 'low'].some(m => mood.includes(m))) {
+      recommendationsResult = await calmingRecommendations({
+        mood: moodResult.mood,
+        message: userInput,
+      });
+    }
+  } catch (error) {
+    console.error('Error in detectMood or calmingRecommendations flow:', error);
+    // We can continue without recommendations if this part fails.
+  }
+
+  return {
+    type: 'botResponse',
+    response: responseText,
+    recommendations: recommendationsResult,
+  };
 }
+
 
 export async function getRecordsForUser(userEmail: string): Promise<DailyRecord[]> {
   try {
