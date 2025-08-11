@@ -17,97 +17,78 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { getFirestore, collection, getDocs, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { app } from '@/lib/firebase';
+import { Skeleton } from '@/components/ui/skeleton';
 
-const LOCAL_STORAGE_KEY = 'hopebot-activity-data';
+const db = getFirestore(app);
 
-interface DailyRecord {
+export interface DailyRecord {
   date: string;
   timeSpent: number; // in seconds
 }
 
-// Function to get data from localStorage
-function getStoredRecords(userId: string | undefined): DailyRecord[] {
-  if (!userId) return [];
+async function getRecordsForUser(userId: string): Promise<DailyRecord[]> {
   try {
-    const item = window.localStorage.getItem(`${LOCAL_STORAGE_KEY}-${userId}`);
-    if (item) {
-      const records: DailyRecord[] = JSON.parse(item);
-      // Fill in any missing days with 0 time spent for the last year
-      const today = new Date();
-      const oneYearAgo = new Date(today);
-      oneYearAgo.setDate(today.getDate() - 364);
-
-      const recordsMap = new Map(records.map(r => [r.date, r.timeSpent]));
-      const allDays: DailyRecord[] = [];
-
-      for (let d = oneYearAgo; d <= today; d.setDate(d.getDate() + 1)) {
-        const dateStr = d.toISOString().split('T')[0];
-        allDays.push({
-          date: dateStr,
-          timeSpent: recordsMap.get(dateStr) || 0,
-        });
-      }
-      return allDays;
-    }
-  } catch (error) {
-    console.error("Failed to parse activity data from localStorage", error);
-  }
-
-  // If no data, generate for the last year
-  const allDays: DailyRecord[] = [];
-  const today = new Date();
-  const oneYearAgo = new Date(today);
-  oneYearAgo.setDate(today.getDate() - 364);
-  for (let d = oneYearAgo; d <= today; d.setDate(d.getDate() + 1)) {
-    allDays.push({
-      date: d.toISOString().split('T')[0],
-      timeSpent: 0,
+    const querySnapshot = await getDocs(collection(db, 'userActivity', userId, 'records'));
+    const recordsMap = new Map<string, number>();
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      recordsMap.set(doc.id, data.timeSpent || 0);
     });
+
+    const allDays: DailyRecord[] = [];
+    const today = new Date();
+    const oneYearAgo = new Date(today);
+    oneYearAgo.setDate(today.getDate() - 364);
+
+    for (let d = new Date(oneYearAgo); d <= today; d.setDate(d.getDate() + 1)) {
+      const dateStr = d.toISOString().split('T')[0];
+      allDays.push({
+        date: dateStr,
+        timeSpent: recordsMap.get(dateStr) || 0,
+      });
+    }
+    return allDays;
+  } catch (error) {
+    console.error("Failed to fetch activity data from Firestore", error);
+    return [];
   }
-  return allDays;
 }
 
-// Function to save data to localStorage
-function storeRecord(userId: string, timeSpentInSeconds: number) {
+async function storeRecordForUser(userId: string, timeSpentInSeconds: number) {
+  if (!userId || timeSpentInSeconds <= 0) return;
+  
   const todayStr = new Date().toISOString().split('T')[0];
-  const storedRecords = getStoredRecords(userId);
-
-  const recordIndex = storedRecords.findIndex(r => r.date === todayStr);
-
-  if (recordIndex > -1) {
-    storedRecords[recordIndex].timeSpent += timeSpentInSeconds;
-  } else {
-    storedRecords.push({ date: todayStr, timeSpent: timeSpentInSeconds });
-  }
+  const recordRef = doc(db, 'userActivity', userId, 'records', todayStr);
 
   try {
-    window.localStorage.setItem(`${LOCAL_STORAGE_KEY}-${userId}`, JSON.stringify(storedRecords));
+    const docSnap = await getDoc(recordRef);
+    if (docSnap.exists()) {
+      const newTime = (docSnap.data().timeSpent || 0) + timeSpentInSeconds;
+      await updateDoc(recordRef, { timeSpent: newTime });
+    } else {
+      await setDoc(recordRef, { timeSpent: timeSpentInSeconds, date: todayStr });
+    }
   } catch (error) {
-    console.error("Failed to save activity data to localStorage", error);
+    console.error("Failed to save activity data to Firestore", error);
   }
 }
 
 function calculateStreaks(records: DailyRecord[]) {
-  if (records.length === 0) {
+    if (!records || records.length === 0) {
     return { currentStreak: 0, longestStreak: 0 };
   }
 
-  const recordsMap = new Map<string, boolean>();
-  records.forEach(r => {
-    if (r.timeSpent > 0) {
-      recordsMap.set(r.date, true);
-    }
-  });
-
-  const sortedDates = Array.from(recordsMap.keys()).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
-
-  if (sortedDates.length === 0) {
+  const activeDays = new Set(records.filter(r => r.timeSpent > 0).map(r => r.date));
+  if (activeDays.size === 0) {
     return { currentStreak: 0, longestStreak: 0 };
   }
+  
+  const sortedDates = Array.from(activeDays).sort();
 
   let longestStreak = 0;
   let currentStreakForLongest = 0;
-
   for (let i = 0; i < sortedDates.length; i++) {
     if (i > 0) {
       const currentDate = new Date(sortedDates[i]);
@@ -117,35 +98,46 @@ function calculateStreaks(records: DailyRecord[]) {
       if (diffDays === 1) {
         currentStreakForLongest++;
       } else {
+        longestStreak = Math.max(longestStreak, currentStreakForLongest);
         currentStreakForLongest = 1;
       }
     } else {
       currentStreakForLongest = 1;
     }
-    if (currentStreakForLongest > longestStreak) {
-      longestStreak = currentStreakForLongest;
-    }
   }
+  longestStreak = Math.max(longestStreak, currentStreakForLongest);
 
   let currentStreak = 0;
   const today = new Date();
-  if (recordsMap.has(today.toISOString().split('T')[0])) {
-    currentStreak = 1;
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-    while (recordsMap.has(yesterday.toISOString().split('T')[0])) {
-      currentStreak++;
-      yesterday.setDate(yesterday.getDate() - 1);
-    }
+  let tempDate = new Date(today);
+  
+  if (activeDays.has(tempDate.toISOString().split('T')[0])) {
+      currentStreak = 1;
+      tempDate.setDate(tempDate.getDate() - 1);
+      while(activeDays.has(tempDate.toISOString().split('T')[0])) {
+          currentStreak++;
+          tempDate.setDate(tempDate.getDate() - 1);
+      }
   }
-
+  
   return { currentStreak, longestStreak };
 }
 
-const StreakChart = ({ data }: { data: DailyRecord[] }) => {
+const StreakChart = ({ data, isLoading }: { data: DailyRecord[]; isLoading: boolean }) => {
+  if (isLoading) {
+    return (
+        <div className="grid grid-cols-7 gap-1 md:grid-cols-[repeat(53,minmax(0,1fr))] md:grid-rows-7 md:grid-flow-col">
+            {Array.from({ length: 365 }).map((_, i) => (
+                <Skeleton key={i} className="w-4 h-4 rounded-sm" />
+            ))}
+        </div>
+    );
+  }
+
   if (!data || data.length === 0) {
     return <div className="text-center text-muted-foreground">No activity data to display.</div>;
   }
+  
   const weeks: (DailyRecord | { date: string; timeSpent: number })[] = [];
   const startDate = new Date(data[0].date);
   const dayOfWeek = startDate.getDay();
@@ -170,17 +162,17 @@ const StreakChart = ({ data }: { data: DailyRecord[] }) => {
   return (
     <TooltipProvider>
       <div className="grid grid-cols-7 gap-1 md:grid-cols-[repeat(53,minmax(0,1fr))] md:grid-rows-7 md:grid-flow-col">
-        {weeks.map((record) =>
+        {weeks.map((record, index) =>
           record.date.startsWith('empty') ? (
             <div key={record.date} className="w-4 h-4" />
           ) : (
-            <Tooltip key={record.date}>
+            <Tooltip key={`${record.date}-${index}`}>
               <TooltipTrigger asChild>
                 <div
                   className="w-4 h-4 rounded-sm"
                   style={{
                     backgroundColor: record.timeSpent > 0 ? 'hsl(var(--primary))' : 'hsl(var(--secondary))',
-                    opacity: record.timeSpent > 0 ? Math.min(1, 0.2 + (record.timeSpent / 60) / 60) : 1,
+                    opacity: record.timeSpent > 0 ? Math.min(1, 0.2 + (record.timeSpent / 3600)) : 1,
                   }}
                 />
               </TooltipTrigger>
@@ -199,29 +191,38 @@ function ProfilePage() {
   const { user } = useUser();
   const [streaks, setStreaks] = useState({ currentStreak: 0, longestStreak: 0 });
   const [dailyRecords, setDailyRecords] = useState<DailyRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const loadData = useCallback(async (userId: string) => {
+    setIsLoading(true);
+    const records = await getRecordsForUser(userId);
+    setDailyRecords(records);
+    setStreaks(calculateStreaks(records));
+    setIsLoading(false);
+  }, []);
 
   useEffect(() => {
-    if (user) {
-      const records = getStoredRecords(user.id);
-      setDailyRecords(records);
-      setStreaks(calculateStreaks(records));
+    if (user?.id) {
+      loadData(user.id);
     }
-  }, [user]);
+  }, [user?.id, loadData]);
 
   // Track time spent
   useEffect(() => {
-    if (!user) return;
+    if (!user?.id) return;
 
     const startTime = Date.now();
-    const handleBeforeUnload = () => {
+    const handleBeforeUnload = async () => {
       const endTime = Date.now();
       const timeSpentInSeconds = Math.round((endTime - startTime) / 1000);
-      storeRecord(user.id, timeSpentInSeconds);
+      if (timeSpentInSeconds > 0) {
+        await storeRecordForUser(user.id, timeSpentInSeconds);
+      }
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [user]);
+  }, [user?.id]);
 
   return (
     <div className="flex flex-col h-full">
@@ -267,17 +268,17 @@ function ProfilePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="bg-secondary p-4 rounded-lg text-center">
                     <h3 className="text-lg font-semibold text-secondary-foreground">Current Streak</h3>
-                    <p className="text-4xl font-bold text-primary">{streaks.currentStreak} days</p>
+                    {isLoading ? <Skeleton className="h-10 w-1/2 mx-auto mt-1" /> : <p className="text-4xl font-bold text-primary">{streaks.currentStreak} days</p>}
                   </div>
                   <div className="bg-secondary p-4 rounded-lg text-center">
                     <h3 className="text-lg font-semibold text-secondary-foreground">Longest Streak</h3>
-                    <p className="text-4xl font-bold text-primary">{streaks.longestStreak} days</p>
+                    {isLoading ? <Skeleton className="h-10 w-1/2 mx-auto mt-1" /> : <p className="text-4xl font-bold text-primary">{streaks.longestStreak} days</p>}
                   </div>
                 </div>
                 <div>
                     <h3 className="text-lg font-semibold mb-4">Daily Activity (Last Year)</h3>
                     <div className="overflow-x-auto pb-4">
-                      <StreakChart data={dailyRecords} />
+                      <StreakChart data={dailyRecords} isLoading={isLoading} />
                     </div>
                 </div>
               </CardContent>
@@ -290,3 +291,5 @@ function ProfilePage() {
 }
 
 export default ProfilePage;
+
+    
