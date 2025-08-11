@@ -55,7 +55,7 @@ const humanLikeResponseFlow = ai.defineFlow(
     outputSchema: HumanLikeResponseOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input, { model: 'gemini-1.5-flash' });
+    const {output} = await prompt(input, { model: 'gemini-1.5-flash-latest' });
     return output!;
   }
 );
