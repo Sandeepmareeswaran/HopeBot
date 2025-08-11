@@ -135,6 +135,16 @@ export function ChatInterface() {
 
     const result = await handleUserMessage(userInput);
     
+    if (!result) {
+        toast({
+            title: "Error",
+            description: "Failed to get a response from the server.",
+            variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+    }
+
     const botMessageContent = (
       <div>
         <p>{result.response}</p>
