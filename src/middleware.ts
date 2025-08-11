@@ -6,6 +6,8 @@ export default clerkMiddleware((auth, request) => {
   if(!isPublicRoute(request)) {
     auth().protect();
   }
+}, {
+  secretKey: process.env.CLERK_SECRET_KEY
 });
 
 export const config = {
