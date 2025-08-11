@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -48,9 +49,9 @@ export function Message({ message, isLoading = false }: MessageProps) {
     <div className={cn('flex items-start gap-3', isBot ? 'justify-start' : 'justify-end')}>
       {isBot && (
         <Avatar className="h-9 w-9 border">
-          <AvatarImage asChild src="/placeholder.svg">
-             <HopeBotLogo className="p-1.5 text-primary" />
-          </AvatarImage>
+          <div className="flex h-full w-full items-center justify-center bg-card">
+            <HopeBotLogo className="p-1.5 text-primary" />
+          </div>
           <AvatarFallback>HB</AvatarFallback>
         </Avatar>
       )}
