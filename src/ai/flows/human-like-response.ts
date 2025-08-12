@@ -10,6 +10,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const HumanLikeResponseInputSchema = z.object({
@@ -37,6 +38,7 @@ const prompt = ai.definePrompt({
   name: 'humanLikeResponsePrompt',
   input: {schema: HumanLikeResponseInputSchema},
   output: {schema: HumanLikeResponseOutputSchema},
+  model: googleAI.model('gemini-1.5-flash'),
   prompt: `You are a mental health companion named HopeBot. Your goal is to provide supportive and empathetic responses. Use a conversational and caring tone.
 
 Analyze the user's input. 
@@ -55,7 +57,7 @@ const humanLikeResponseFlow = ai.defineFlow(
     outputSchema: HumanLikeResponseOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input, { model: 'gemini-1.5-flash' });
+    const {output} = await prompt(input);
     return output!;
   }
 );
