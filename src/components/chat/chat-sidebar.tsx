@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Button } from '../ui/button';
 import { LogOut, MessageSquareText } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -30,11 +31,14 @@ export function ChatSidebar({
         <div className="px-4 space-y-1">
           {/* Static conversation item */}
           <Button
+            asChild
             variant="secondary"
             className="w-full justify-start"
           >
-            <MessageSquareText className="mr-2 h-4 w-4 flex-shrink-0" />
-            My Conversation
+            <Link href="/chat">
+              <MessageSquareText className="mr-2 h-4 w-4 flex-shrink-0" />
+              My Conversation
+            </Link>
           </Button>
         </div>
       </div>
