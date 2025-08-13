@@ -2,11 +2,10 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { HopeBotLogo } from '@/components/icons/hope-bot-logo';
 import { ArrowRight } from 'lucide-react';
-import { auth } from '@clerk/nextjs/server';
 
 export default function LandingPage() {
-  const { userId } = auth();
-  const href = userId ? '/chat' : '/sign-in';
+  // const { userId } = auth(); // Temporarily removed to prevent crash
+  const href = '/chat'; // Link directly to chat
 
   return (
     <main className="flex h-full w-full flex-col items-center justify-center bg-background p-4">
