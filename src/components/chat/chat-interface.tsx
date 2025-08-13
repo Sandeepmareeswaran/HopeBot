@@ -1,10 +1,17 @@
 'use client';
 
-import { useState, useRef, useEffect, type FormEvent, type ChangeEvent } from 'react';
-import { useToast } from "@/hooks/use-toast"
+import {
+  useState,
+  useRef,
+  useEffect,
+  type FormEvent,
+  type ChangeEvent,
+} from 'react';
+import { useToast } from '@/hooks/use-toast';
 import { handleUserMessage } from '@/app/actions';
 import { MessageList } from './message-list';
 import { ChatForm } from './chat-form';
+import { usePathname } from 'next/navigation';
 
 export interface Message {
   id: string;
@@ -27,9 +34,16 @@ export function ChatInterface() {
   const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const { toast } = useToast();
+  const pathname = usePathname();
 
   useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    // Clear messages when navigating to a new chat
+    setMessages([]);
+  }, [pathname]);
+
+  useEffect(() => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
@@ -52,20 +66,21 @@ export function ChatInterface() {
       recognition.onerror = (event) => {
         console.error('Speech recognition error:', event.error);
         toast({
-          title: "Speech Recognition Error",
-          description: "Could not start speech recognition. Please check your microphone permissions.",
-          variant: "destructive",
-        })
+          title: 'Speech Recognition Error',
+          description:
+            'Could not start speech recognition. Please check your microphone permissions.',
+          variant: 'destructive',
+        });
         setIsRecording(false);
       };
-      
+
       recognition.onend = () => {
         setIsRecording(false);
       };
 
       recognitionRef.current = recognition;
     } else {
-        console.warn("Speech Recognition not supported in this browser.")
+      console.warn('Speech Recognition not supported in this browser.');
     }
   }, [toast]);
 
@@ -77,8 +92,10 @@ export function ChatInterface() {
     }
     setIsRecording(!isRecording);
   };
-  
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
+
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setInput(e.target.value);
   };
 
@@ -98,20 +115,20 @@ export function ChatInterface() {
     setMessages((prev) => [...prev, userMessage]);
 
     const result = await handleUserMessage(userInput);
-    
+
     // Add a defensive check to ensure the result is valid before proceeding.
     // The backend action is now designed to always return a valid object, but this prevents client-side crashes.
     if (!result || !result.response) {
-        toast({
-            title: "Error",
-            description: "An unexpected error occurred. Please try again.",
-            variant: "destructive",
-        });
-        // Remove the user's message if the bot fails, to allow them to retry.
-        setMessages((prev) => prev.slice(0, prev.length -1));
-        setInput(userInput); // Restore user input
-        setIsLoading(false);
-        return;
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred. Please try again.',
+        variant: 'destructive',
+      });
+      // Remove the user's message if the bot fails, to allow them to retry.
+      setMessages((prev) => prev.slice(0, prev.length - 1));
+      setInput(userInput); // Restore user input
+      setIsLoading(false);
+      return;
     }
 
     const botMessageContent = (
@@ -121,17 +138,25 @@ export function ChatInterface() {
           <div className="mt-4 space-y-3">
             {result.recommendations.calmingExercises?.length > 0 && (
               <div>
-                <h4 className="font-semibold text-sm mb-1">Here are a few calming exercises you could try:</h4>
+                <h4 className="font-semibold text-sm mb-1">
+                  Here are a few calming exercises you could try:
+                </h4>
                 <ul className="list-disc list-inside text-sm space-y-1">
-                  {result.recommendations.calmingExercises.map((ex, i) => <li key={`ex-${i}`}>{ex}</li>)}
+                  {result.recommendations.calmingExercises.map((ex, i) => (
+                    <li key={`ex-${i}`}>{ex}</li>
+                  ))}
                 </ul>
               </div>
             )}
             {result.recommendations.cbtPrompts?.length > 0 && (
-               <div className="mt-3">
-                <h4 className="font-semibold text-sm mb-1">Here are some prompts to reflect on:</h4>
+              <div className="mt-3">
+                <h4 className="font-semibold text-sm mb-1">
+                  Here are some prompts to reflect on:
+                </h4>
                 <ul className="list-disc list-inside text-sm space-y-1">
-                  {result.recommendations.cbtPrompts.map((p, i) => <li key={`p-${i}`}>{p}</li>)}
+                  {result.recommendations.cbtPrompts.map((p, i) => (
+                    <li key={`p-${i}`}>{p}</li>
+                  ))}
                 </ul>
               </div>
             )}
@@ -139,7 +164,7 @@ export function ChatInterface() {
         )}
       </div>
     );
-    
+
     const botMessage: Message = {
       id: `${Date.now()}-bot`,
       role: 'bot',

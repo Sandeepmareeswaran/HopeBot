@@ -2,9 +2,11 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { HopeBotLogo } from '@/components/icons/hope-bot-logo';
 import { ArrowRight } from 'lucide-react';
+import { auth } from '@clerk/nextjs/server';
 
-export default async function LandingPage() {
-  const href = '/chat';
+export default function LandingPage() {
+  const { userId } = auth();
+  const href = userId ? '/chat' : '/sign-in';
 
   return (
     <main className="flex h-full w-full flex-col items-center justify-center bg-background p-4">
@@ -14,7 +16,8 @@ export default async function LandingPage() {
           Welcome to HopeBot
         </h1>
         <p className="text-lg text-muted-foreground">
-          Your friendly, AI-powered companion for mental wellness. Here to listen, support, and guide you through challenging moments.
+          Your friendly, AI-powered companion for mental wellness. Here to
+          listen, support, and guide you through challenging moments.
         </p>
 
         <Button asChild size="lg" className="group">
@@ -24,7 +27,9 @@ export default async function LandingPage() {
           </Link>
         </Button>
         <p className="text-xs text-muted-foreground pt-8">
-          HopeBot is an AI assistant and not a replacement for professional medical advice. If you are in crisis, please contact a local emergency service.
+          HopeBot is an AI assistant and not a replacement for professional
+          medical advice. If you are in crisis, please contact a local emergency
+          service.
         </p>
       </div>
     </main>
