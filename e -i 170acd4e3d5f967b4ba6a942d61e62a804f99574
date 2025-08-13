@@ -1,0 +1,385 @@
+[33mcommit 7f7eabaed9fe8da0a8653fec1d38d57c847b1d7c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Tue Aug 12 15:23:58 2025 +0000
+
+    Implement full mental health companion with all agent roles
+
+[33mcommit 170acd4e3d5f967b4ba6a942d61e62a804f99574[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Tue Aug 12 14:58:42 2025 +0000
+
+    Mental Health Companion Agent
+    Problem: Rise in loneliness, anxiety, lack
+
+[33mcommit 79beb830f1d9fefed176eec19dad8577bf5a7df4[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Tue Aug 12 14:27:33 2025 +0000
+
+    File changes
+
+[33mcommit f0f075be6ac2501d46454f02b8b8c6909dcce9d4[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Tue Aug 12 14:26:22 2025 +0000
+
+    I see this error with the app, reported by NextJS, please fix it. The er
+
+[33mcommit 8054ec58ec4d7f8dd64afc84b723ed997de2ada9[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Tue Aug 12 14:23:58 2025 +0000
+
+    run the backend while providing any input to the chat bot it just return
+
+[33mcommit e2a86b0f49e393b6b1c4dce5c2ec3155dcc0fdbe[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Tue Aug 12 14:19:30 2025 +0000
+
+    /?embedded=0&monospaceUid=16389:1  GET https://9000-firebase-studio-1754
+
+[33mcommit b6b81e1c0dd301c069050bb0c02a9d14eec81135[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Tue Aug 12 12:55:22 2025 +0000
+
+    see am faciong  the error while geting the response from the beckend tha
+
+[33mcommit f226eac461a3e8511d6ef31ee6acfee6ead19454[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 15:53:51 2025 +0000
+
+    Add .env to .gitignore
+
+[33mcommit 90bae321eafc8d15036065e3585b3a54c5f60807[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 15:25:15 2025 +0000
+
+    studio-6347958191:~/studio{main}$ npm run dev
+    
+    > nextn@0.1.0 dev
+    > next
+
+[33mcommit ae770acca51218a77c66a47afefba08f8d2579f9[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 15:21:20 2025 +0000
+
+    I see this error with the app, reported by NextJS, please fix it. The er
+
+[33mcommit 671eab988bbce6bf03d427227e9f82c3069b9aba[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 15:04:22 2025 +0000
+
+    actions.ts?s4:14
+     POST https://6000-firebase-studio-1754891644824.clust
+
+[33mcommit 2a6ee8aee6b9092c9d0efb7577f6342f227e9fd7[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 14:54:12 2025 +0000
+
+    File changes
+
+[33mcommit f4c4f0d8f35274a6c15db036df50ff157b14329b[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 14:47:28 2025 +0000
+
+    still the error is not beeen solved
+
+[33mcommit 9f567761e130127fb5ed99e54be754eded1d595e[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 14:44:38 2025 +0000
+
+    Error: An unexpected response was received from the server.
+        at fetch
+
+[33mcommit d382342cc20af2d47ae38664aba8a20c1a728114[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 14:43:13 2025 +0000
+
+    can u  understand me or not ??/ i dont get any output from the backend b
+
+[33mcommit 7f6815a413f5caf2081247cde55b5d9e17ad7630[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 14:41:37 2025 +0000
+
+    *  Executing task: (set -o pipefail && npm run genkit:watch 2>&1 | tee /
+
+[33mcommit 36258cd9259353a59e34c815b3079711af15bafc[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 14:36:58 2025 +0000
+
+    TypeError: Cannot read properties of undefined (reading 'response')
+
+[33mcommit a192bbc2ff1f19c2589cc18c6d1b9daa00634655[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 14:35:15 2025 +0000
+
+    after updation of those am still facing the same error of I'm having a l
+
+[33mcommit 4f60371ba0a6aa6ec6ba550a082144e013e00df3[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 14:32:38 2025 +0000
+
+    same eerror tghat beeing occurs can u help me to solve this or not ?
+
+[33mcommit 748f9c86872377820bf3d5d824a283592a7ce14b[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 14:30:17 2025 +0000
+
+    I'm having a little trouble formulating a full response right now, but I
+
+[33mcommit f0058ea2f593669c86bc120890443375e9022975[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 14:29:00 2025 +0000
+
+    i dont thing the backend of the code is running ang i can't reach the ba
+
+[33mcommit afd2977c755bac5d47b6071c17f114f077e02cbd[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 14:03:45 2025 +0000
+
+    i donty get any response from the chat bot it just return me the same  e
+
+[33mcommit 73a27aa3a419d0e85810884b26a3707e99ae7e98[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 14:00:44 2025 +0000
+
+    i dont get any response fro the bot
+
+[33mcommit 764964e743005257ae19a9bdb8932553f90d6884[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 13:58:07 2025 +0000
+
+    I apologize, but I encountered an error. Please try again in a moment.
+
+[33mcommit 5aec5a2773254e9c2dbe2c2faf756640c2d9732a[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 13:47:30 2025 +0000
+
+    placeholder.svg:1  Failed to load resource: the server responded with a
+
+[33mcommit bcc2540ca4fab4ff2d308ef076cb6a05a0529e67[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 13:45:56 2025 +0000
+
+    same error comes again
+
+[33mcommit 2357390bc6abc7d5b32cf721603f747be587f611[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 13:45:13 2025 +0000
+
+    I apologize, but I encountered an error. Please try again in a moment.
+
+[33mcommit 8ec8b0e9d94de7aae0c5c9f0d80f13ee7a82cb12[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 13:41:42 2025 +0000
+
+    The NextJS app server is having trouble starting. Please identify what c
+
+[33mcommit b804869d9d48090e872fdff90529dc04cd548db1[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:52:38 2025 +0000
+
+    same error that comes
+
+[33mcommit 3bac12dfd25daa3827854ceec3c4f4c7e79f0341[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:47:48 2025 +0000
+
+    after signed in it again return me to the sign in page
+
+[33mcommit b5ae3a720ba635c3144e925edec2a4da9e5342e6[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:45:27 2025 +0000
+
+    i cont routed to the home {chatbot} page i cont routed for the auth page
+
+[33mcommit 95154df9685707aa604d4315ce230fec06b7357b[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:36:07 2025 +0000
+
+    after changin those things it just return me the same error i.e Error: C
+
+[33mcommit c1a43c4939ed644ba7049fe996715bbf0c2b28fd[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:33:39 2025 +0000
+
+    Error: Clerk: Handshake token verification failed: Unable to find a sign
+
+[33mcommit 43293985477731e3fe29e9f82a903e264db6b8eb[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:32:53 2025 +0000
+
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_YWRhcHRlZC1tYWNhdy0zMy5jbGVyay
+
+[33mcommit 9cfea81e7c5d86bbb8e14ad202c00de2aa410bf1[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:31:02 2025 +0000
+
+    ?__clerk_api_version=2025-04-10&__clerk_handshake=eyJhbGciOiJSUzI1NiIsIm
+
+[33mcommit 76a96371a002144fa73bbdc71ccf6c85d0c093bc[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:28:58 2025 +0000
+
+    same error keep comming, not yet solved could u just solve those?
+
+[33mcommit 6f439557d302880273ff849409932bf1759fdd44[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:28:03 2025 +0000
+
+    Error: Clerk: Handshake token verification failed: The provided Clerk Se
+
+[33mcommit a5f6c47cadc63e257a8a4c785af3f7fc91cfd6b9[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:27:34 2025 +0000
+
+    Error: Clerk: Handshake token verification failed: The provided Clerk Se
+
+[33mcommit 4709e1f0530538b746d053abf8dab1f8d188c795[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:25:06 2025 +0000
+
+    Error: Failed to load chunk /_next/static/chunks/node_modules_%40clerk_n
+
+[33mcommit 08784850dad42494627f47651ca85ea7a0dab1c4[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:22:51 2025 +0000
+
+    TypeError: auth(...).protect is not a function
+        at <unknown> (file://
+
+[33mcommit 7d9f820fcbdb591658293ef6a59279e961b55445[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:21:41 2025 +0000
+
+    TypeError: auth(...).protect is not a function
+        at <unknown> (file://
+
+[33mcommit e2962d6e3b68e4b3aea924f8b6d920aa8d61a105[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:19:14 2025 +0000
+
+    <!DOCTYPE html>
+    <html lang="en" class="h-full">
+        <head>
+            <meta
+
+[33mcommit 4332347791e9541f0236e0292720996cd0660fee[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:17:35 2025 +0000
+
+    I see this error with the app, reported by NextJS, please fix it. The er
+
+[33mcommit 26abe1442ef6172158960a22e22d8f309a67cc55[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:17:13 2025 +0000
+
+    I see this error with the app, reported by NextJS, please fix it. The er
+
+[33mcommit 7fb50ef210748e22f631c18f231a1cde88231e87[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:15:33 2025 +0000
+
+    The NextJS app server is having trouble starting. Please identify what c
+
+[33mcommit 307e09fce599ba19b32f9d9b1d62fbff3cf00be3[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:13:53 2025 +0000
+
+    same error occurs
+
+[33mcommit 24d8b06ba9e2ffaaaf92b42775da5f3df46bfcac[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:12:15 2025 +0000
+
+    {"errors":[{"message":"Invalid host","long_message":"We were unable to a
+
+[33mcommit 7ae12eba448d94df6ecd6b54a2b4bbbbd9c5ad20[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:11:29 2025 +0000
+
+    i need the document id should be same as the email of the user who login
+
+[33mcommit 0588ce904381d6155772e05707735a8ac298e7d0[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 09:02:50 2025 +0000
+
+    -----BEGIN PUBLIC KEY-----
+    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0
+
+[33mcommit c0b21dc16d114709e4950bed59cc83714b6a5226[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 08:43:45 2025 +0000
+
+    i dont see any thing that display the time seconds that am spend in the
+
+[33mcommit a009fc594c08ba169e9c74e780e4a252de5d256b[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 08:39:18 2025 +0000
+
+    in the home page display the time sec or min that i have spend based and
+
+[33mcommit 3541b19d01acf094fc68d2f5211dcc158cf55fa8[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 08:36:18 2025 +0000
+
+    i need to store in the firebase database and its congif file is provided
+
+[33mcommit d12661b5a95aa941899cfac33ae29688cfb288d6[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 08:25:24 2025 +0000
+
+    can u just correct the profile page layout it is not correctly aligned c
+
+[33mcommit 51467726f2f72ebf37d2521feaa941d18f6a037f[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 08:13:41 2025 +0000
+
+    TypeError: auth(...).protect is not a function
+        at <unknown> (file://
+
+[33mcommit 5721613f2af0e2421ec20e36fdf1b1ee26025c1a[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 08:10:14 2025 +0000
+
+    TypeError: auth(...).protect is not a function
+        at <unknown> (file://
+
+[33mcommit 92acd5fdeb351c73f56cdd4e16ff2d94e2e1ec56[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 07:38:50 2025 +0000
+
+    I see this error with the app, reported by NextJS, please fix it. The er
+
+[33mcommit 1e2c942708cea4370526953fc2ebd60e04cabedf[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 07:33:11 2025 +0000
+
+    6000-firebase-studio-1754891644824.cluster-zumahodzirciuujpqvsniawo3o.cl
+
+[33mcommit 4af432d926dcb2e0caba585be1793a2230b3dd86[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 07:28:45 2025 +0000
+
+    it seems no error in the console but still am remaiin the same error
+
+[33mcommit cc9c5e17d7b0ae3f6cd0442336afc231ea040e1f[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 07:26:24 2025 +0000
+
+    i dont see any thing on screen except the blank white screen
+
+[33mcommit 81aef79990100fbffce0ff46dff12228a0a462e0[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 07:25:11 2025 +0000
+
+    i need to implement some thing to provide some more featiures to the use
+
+[33mcommit 9bb99d18b9de1e9c7af60a4e5a9fce4a0b65e673[m
+Author: Sandeep Mareeswaran <sandeepmaree2005@gmail.com>
+Date:   Mon Aug 11 06:01:15 2025 +0000
+
+    Initial prototype
+
+[33mcommit ef5f6bcabc9a017a87ee20c118c10b9528ef5011[m
+Author: Firebase Studio <noreply@firebase.studio>
+Date:   Fri Aug 8 14:36:12 2025 +0000
+
+    Initialized workspace with Firebase Studio
