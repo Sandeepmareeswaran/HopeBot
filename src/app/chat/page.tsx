@@ -1,18 +1,79 @@
+>'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ChatSidebar } from '@/components/chat/chat-sidebar';
 import { ChatInterface } from '@/components/chat/chat-interface';
 import { ChatHeader } from '@/components/chat/chat-header';
-import { getChatsForUser } from '../actions';
+import { getChatHistory, type Message } from '../actions';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default async function ChatPage() {
-  const chats = await getChatsForUser();
+export default function ChatPage() {
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const email = localStorage.getItem('userEmail');
+    if (email) {
+      setUserEmail(email);
+    } else {
+      router.push('/login');
+    }
+  }, [router]);
+
+  useEffect(() => {
+    if (userEmail) {
+      const fetchHistory = async () => {
+        setLoading(true);
+        const history = await getChatHistory(userEmail);
+        // The chat interface expects ReactNode, but the history is just strings.
+        // We need to map the content to a simple paragraph.
+        const formattedHistory = history.map((msg) => ({
+          ...msg,
+          content: <p>{msg.content}</p>,
+        }));
+        setMessages(formattedHistory);
+        setLoading(false);
+      };
+      fetchHistory();
+    }
+  }, [userEmail]);
+
+  if (!userEmail) {
+    // Render a loading state or redirect will be handled by the effect
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-background">
+        <div className="space-y-4">
+          <Skeleton className="h-12 w-64" />
+          <Skeleton className="h-8 w-full" />
+          <Skeleton className="h-8 w-full" />
+        </div>
+      </div>
+    );
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('userEmail');
+    router.push('/login');
+  };
 
   return (
     <div className="flex h-full bg-background">
-      <ChatSidebar chats={chats} />
+      <ChatSidebar
+        userEmail={userEmail}
+        onLogout={handleLogout}
+        className="w-[300px]"
+      />
       <div className="flex flex-1 flex-col">
         <ChatHeader />
         <div className="flex-1 overflow-hidden">
-          <ChatInterface />
+          <ChatInterface
+            userEmail={userEmail}
+            initialMessages={messages}
+            isLoadingHistory={loading}
+          />
         </div>
       </div>
     </div>

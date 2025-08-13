@@ -27,8 +27,18 @@ declare global {
   }
 }
 
-export function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>([]);
+interface ChatInterfaceProps {
+  userEmail: string;
+  initialMessages: Message[];
+  isLoadingHistory: boolean;
+}
+
+export function ChatInterface({
+  userEmail,
+  initialMessages,
+  isLoadingHistory,
+}: ChatInterfaceProps) {
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
@@ -37,8 +47,12 @@ export function ChatInterface() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Clear messages when navigating to a new chat
-    setMessages([]);
+    setMessages(initialMessages);
+  }, [initialMessages]);
+
+  useEffect(() => {
+    // Clear messages when navigating to a new chat (though we only have one now)
+    // setMessages([]);
   }, [pathname]);
 
   useEffect(() => {
@@ -114,19 +128,16 @@ export function ChatInterface() {
     };
     setMessages((prev) => [...prev, userMessage]);
 
-    const result = await handleUserMessage(userInput);
+    const result = await handleUserMessage(userInput, userEmail);
 
-    // Add a defensive check to ensure the result is valid before proceeding.
-    // The backend action is now designed to always return a valid object, but this prevents client-side crashes.
     if (!result || !result.response) {
       toast({
         title: 'Error',
         description: 'An unexpected error occurred. Please try again.',
         variant: 'destructive',
       });
-      // Remove the user's message if the bot fails, to allow them to retry.
       setMessages((prev) => prev.slice(0, prev.length - 1));
-      setInput(userInput); // Restore user input
+      setInput(userInput);
       setIsLoading(false);
       return;
     }
@@ -177,7 +188,7 @@ export function ChatInterface() {
 
   return (
     <div className="flex flex-col h-full">
-      <MessageList messages={messages} isLoading={isLoading} />
+      <MessageList messages={messages} isLoading={isLoading || isLoadingHistory} />
       <ChatForm
         input={input}
         isRecording={isRecording}

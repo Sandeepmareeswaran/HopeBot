@@ -4,7 +4,7 @@ import { HopeBotLogo } from '@/components/icons/hope-bot-logo';
 import { ArrowRight } from 'lucide-react';
 
 export default function LandingPage() {
-  const href = '/chat';
+  const href = '/login';
 
   return (
     <main className="flex h-full w-full flex-col items-center justify-center bg-background p-4">
