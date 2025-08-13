@@ -5,7 +5,6 @@ import {
   type HumanLikeResponseOutput,
 } from '@/ai/flows/human-like-response';
 import { db, type Chat, type Message } from '@/lib/db';
-import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 
 // This is the primary response object returned to the frontend.
@@ -34,13 +33,8 @@ function isCrisis(message: string): boolean {
 export async function handleUserMessage(
   userInput: string
 ): Promise<BotResponse> {
-  const { userId } = auth();
-  if (!userId) {
-    return {
-      response: 'Error: Unauthorized user.',
-      recommendations: null,
-    };
-  }
+  // A hardcoded user ID for now since authentication is removed.
+  const userId = 'anonymous_user';
 
   try {
     // Immediately check for crisis keywords. This is a critical safety feature.
@@ -93,9 +87,6 @@ export async function handleUserMessage(
 }
 
 export async function getChatsForUser(): Promise<Chat[]> {
-  const { userId } = auth();
-  if (!userId) {
-    return [];
-  }
+  const userId = 'anonymous_user';
   return db.getChats(userId);
 }

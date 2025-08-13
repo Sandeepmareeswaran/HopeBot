@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { HopeBotLogo } from '@/components/icons/hope-bot-logo';
 import { ArrowLeft } from 'lucide-react';
-import { UserButton } from '@clerk/nextjs';
 
 export function ChatHeader() {
   return (
@@ -16,8 +15,8 @@ export function ChatHeader() {
         <HopeBotLogo className="w-8 h-8 text-primary" />
         <span className="text-lg font-semibold text-foreground">HopeBot</span>
       </div>
-      <div className="flex items-center space-x-2">
-        <UserButton afterSignOutUrl="/" />
+      <div className="flex items-center space-x-2 w-10">
+        {/* Placeholder for future user button */}
       </div>
     </header>
   );
