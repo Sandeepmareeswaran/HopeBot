@@ -15,6 +15,7 @@ import {z} from 'genkit';
 
 const HumanLikeResponseInputSchema = z.object({
   userInput: z.string().describe('The user input to respond to.'),
+  language: z.string().describe('The language for the response (e.g., "English", "Tamil", "Hindi").'),
 });
 export type HumanLikeResponseInput = z.infer<typeof HumanLikeResponseInputSchema>;
 
@@ -40,6 +41,8 @@ const prompt = ai.definePrompt({
   output: {schema: HumanLikeResponseOutputSchema},
   model: googleAI.model('gemini-1.5-flash'),
   prompt: `You are HopeBot, a friendly and empathetic companion. Your goal is to be a warm, supportive friend. Talk like a real person, not a robot. Use a conversational, caring, and gentle tone. Avoid clinical language and generic AI phrases like "As an AI..." or "I can see you're feeling...".
+
+You MUST respond in the following language: {{{language}}}. All parts of your response, including recommendations, must be in this language.
 
 Analyze the user's input.
 - First, write a direct, empathetic, and natural response as if you were talking to a friend. Be present with them.

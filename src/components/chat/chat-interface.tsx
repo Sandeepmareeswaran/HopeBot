@@ -31,12 +31,14 @@ interface ChatInterfaceProps {
   userEmail: string;
   initialMessages: Message[];
   isLoadingHistory: boolean;
+  language: string;
 }
 
 export function ChatInterface({
   userEmail,
   initialMessages,
   isLoadingHistory,
+  language,
 }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState('');
@@ -47,7 +49,12 @@ export function ChatInterface({
   const pathname = usePathname();
 
   useEffect(() => {
-    setMessages(initialMessages);
+    // Map the content to a simple paragraph for initial render.
+    const formattedHistory = initialMessages.map((msg) => ({
+      ...msg,
+      content: <p>{msg.content}</p>,
+    }));
+    setMessages(formattedHistory);
   }, [initialMessages]);
 
   useEffect(() => {
@@ -128,7 +135,7 @@ export function ChatInterface({
     };
     setMessages((prev) => [...prev, userMessage]);
 
-    const result = await handleUserMessage(userInput, userEmail);
+    const result = await handleUserMessage(userInput, userEmail, language);
 
     if (!result || !result.response) {
       toast({

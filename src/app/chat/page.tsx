@@ -12,6 +12,7 @@ export default function ChatPage() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
+  const [language, setLanguage] = useState('English');
   const router = useRouter();
 
   useEffect(() => {
@@ -28,13 +29,7 @@ export default function ChatPage() {
       const fetchHistory = async () => {
         setLoading(true);
         const history = await getChatHistory(userEmail);
-        // The chat interface expects ReactNode, but the history is just strings.
-        // We need to map the content to a simple paragraph.
-        const formattedHistory = history.map((msg) => ({
-          ...msg,
-          content: <p>{msg.content}</p>,
-        }));
-        setMessages(formattedHistory);
+        setMessages(history);
         setLoading(false);
       };
       fetchHistory();
@@ -64,15 +59,16 @@ export default function ChatPage() {
       <ChatSidebar
         userEmail={userEmail}
         onLogout={handleLogout}
-        className="w-[300px]"
+        className="hidden md:flex w-[300px]"
       />
       <div className="flex flex-1 flex-col">
-        <ChatHeader />
+        <ChatHeader language={language} setLanguage={setLanguage} />
         <div className="flex-1 overflow-hidden">
           <ChatInterface
             userEmail={userEmail}
             initialMessages={messages}
             isLoadingHistory={loading}
+            language={language}
           />
         </div>
       </div>

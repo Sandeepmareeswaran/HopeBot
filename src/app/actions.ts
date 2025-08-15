@@ -45,7 +45,8 @@ function isCrisis(message: string): boolean {
 
 export async function handleUserMessage(
   userInput: string,
-  userEmail: string
+  userEmail: string,
+  language: string
 ): Promise<BotResponse> {
   try {
     // Immediately check for crisis keywords. This is a critical safety feature.
@@ -58,7 +59,7 @@ export async function handleUserMessage(
     }
 
     // Call the single, consolidated AI flow.
-    const result = await humanLikeResponse({ userInput });
+    const result = await humanLikeResponse({ userInput, language });
 
     // Ensure the result and its properties are not null before returning.
     // The AI flow is designed to always return this structure, but this is a defensive check.
