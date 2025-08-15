@@ -3,15 +3,17 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { HopeBotLogo } from '@/components/icons/hope-bot-logo';
 import { Volume2, VolumeX } from 'lucide-react';
 import type { Message as MessageType } from './chat-interface';
+import type { Translations } from '@/lib/translations';
 
 interface MessageProps {
   message: MessageType;
   isLoading?: boolean;
+  translations?: Translations['chatInterface']['message'];
 }
 
 function extractTextFromReactNode(node: React.ReactNode): string {
@@ -24,7 +26,7 @@ function extractTextFromReactNode(node: React.ReactNode): string {
     return '';
 }
 
-export function Message({ message, isLoading = false }: MessageProps) {
+export function Message({ message, isLoading = false, translations }: MessageProps) {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const isBot = message.role === 'bot';
 
@@ -73,13 +75,13 @@ export function Message({ message, isLoading = false }: MessageProps) {
           <div className="text-sm break-words whitespace-pre-wrap">{message.content}</div>
         )}
       </div>
-      {isBot && !isLoading && (
+      {isBot && !isLoading && translations && (
         <Button
           size="icon"
           variant="ghost"
           className="h-9 w-9 shrink-0 text-muted-foreground"
           onClick={handleTextToSpeech}
-          aria-label={isSpeaking ? "Stop speech" : "Read message aloud"}
+          aria-label={isSpeaking ? translations.aria.stopSpeech : translations.aria.readAloud}
         >
           {isSpeaking ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
         </Button>

@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { handleUserMessage } from '@/app/actions';
 import { MessageList } from './message-list';
 import { ChatForm } from './chat-form';
-import { usePathname } from 'next/navigation';
+import type { Language, Translations } from '@/lib/translations';
 
 export interface Message {
   id: string;
@@ -31,7 +31,8 @@ interface ChatInterfaceProps {
   userEmail: string;
   initialMessages: Message[];
   isLoadingHistory: boolean;
-  language: string;
+  language: Language;
+  translations: Translations['chatInterface'];
 }
 
 export function ChatInterface({
@@ -39,6 +40,7 @@ export function ChatInterface({
   initialMessages,
   isLoadingHistory,
   language,
+  translations
 }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState('');
@@ -46,7 +48,6 @@ export function ChatInterface({
   const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const { toast } = useToast();
-  const pathname = usePathname();
 
   useEffect(() => {
     // Map the content to a simple paragraph for initial render.
@@ -58,17 +59,13 @@ export function ChatInterface({
   }, [initialMessages]);
 
   useEffect(() => {
-    // Clear messages when navigating to a new chat (though we only have one now)
-    // setMessages([]);
-  }, [pathname]);
-
-  useEffect(() => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
+      // TODO: Make speech recognition language dynamic
       recognition.lang = 'en-US';
 
       recognition.onresult = (event) => {
@@ -87,9 +84,8 @@ export function ChatInterface({
       recognition.onerror = (event) => {
         console.error('Speech recognition error:', event.error);
         toast({
-          title: 'Speech Recognition Error',
-          description:
-            'Could not start speech recognition. Please check your microphone permissions.',
+          title: translations.speechError.title,
+          description: translations.speechError.description,
           variant: 'destructive',
         });
         setIsRecording(false);
@@ -103,7 +99,7 @@ export function ChatInterface({
     } else {
       console.warn('Speech Recognition not supported in this browser.');
     }
-  }, [toast]);
+  }, [toast, translations]);
 
   const toggleRecording = () => {
     if (isRecording) {
@@ -140,7 +136,7 @@ export function ChatInterface({
     if (!result || !result.response) {
       toast({
         title: 'Error',
-        description: 'An unexpected error occurred. Please try again.',
+        description: translations.unexpectedError,
         variant: 'destructive',
       });
       setMessages((prev) => prev.slice(0, prev.length - 1));
@@ -157,7 +153,7 @@ export function ChatInterface({
             {result.recommendations.calmingExercises?.length > 0 && (
               <div>
                 <h4 className="font-semibold text-sm mb-1">
-                  Here are a few calming exercises you could try:
+                  {translations.recommendations.calmingExercises}
                 </h4>
                 <ul className="list-disc list-inside text-sm space-y-1">
                   {result.recommendations.calmingExercises.map((ex, i) => (
@@ -169,7 +165,7 @@ export function ChatInterface({
             {result.recommendations.cbtPrompts?.length > 0 && (
               <div className="mt-3">
                 <h4 className="font-semibold text-sm mb-1">
-                  Here are some prompts to reflect on:
+                  {translations.recommendations.cbtPrompts}
                 </h4>
                 <ul className="list-disc list-inside text-sm space-y-1">
                   {result.recommendations.cbtPrompts.map((p, i) => (
@@ -195,7 +191,7 @@ export function ChatInterface({
 
   return (
     <div className="flex flex-col h-full">
-      <MessageList messages={messages} isLoading={isLoading || isLoadingHistory} />
+      <MessageList messages={messages} isLoading={isLoading || isLoadingHistory} translations={translations} />
       <ChatForm
         input={input}
         isRecording={isRecording}
@@ -203,6 +199,7 @@ export function ChatInterface({
         handleInputChange={handleInputChange}
         handleSubmit={handleSubmit}
         toggleRecording={toggleRecording}
+        translations={translations.chatForm}
       />
     </div>
   );

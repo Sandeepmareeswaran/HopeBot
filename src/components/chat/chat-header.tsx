@@ -11,10 +11,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { HopeBotLogo } from '@/components/icons/hope-bot-logo';
 import { ArrowLeft, Languages } from 'lucide-react';
+import type { Language } from '@/lib/translations';
 
 interface ChatHeaderProps {
-  language: string;
-  setLanguage: (language: string) => void;
+  language: Language;
+  setLanguage: (language: Language) => void;
 }
 
 export function ChatHeader({ language, setLanguage }: ChatHeaderProps) {
@@ -39,7 +40,7 @@ export function ChatHeader({ language, setLanguage }: ChatHeaderProps) {
           <DropdownMenuContent>
             <DropdownMenuRadioGroup
               value={language}
-              onValueChange={setLanguage}
+              onValueChange={(value) => setLanguage(value as Language)}
             >
               <DropdownMenuRadioItem value="English">
                 English

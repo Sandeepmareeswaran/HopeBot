@@ -1,48 +1,58 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { HopeBotLogo } from '@/components/icons/hope-bot-logo';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { getTranslations, type Translations } from '@/lib/translations';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [t, setT] = useState<Translations['loginPage']>(
+    getTranslations('English').loginPage
+  );
+
+  useEffect(() => {
+    const storedLang =
+      (localStorage.getItem('hopebot-language') as keyof Translations) ||
+      'English';
+    setT(getTranslations(storedLang).loginPage);
+  }, []);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setError('');
-    
+
     if (!email) {
-      setError('Please enter your email address.');
+      setError(t.errorMessages.emailRequired);
       return;
     }
-    
-    // Basic email validation
+
     if (!/\S+@\S+\.\S+/.test(email)) {
-        setError('Please enter a valid email address.');
-        return;
+      setError(t.errorMessages.invalidEmail);
+      return;
     }
 
     setLoading(true);
 
     try {
-      // For this implementation, we will simply store the email in localStorage
-      // as a mock "login" and proceed to the chat.
-      // A full implementation would use Firebase Auth (e.g., sendSignInLinkToEmail).
       localStorage.setItem('userEmail', email);
-
-      // Redirect to the chat page
       router.push('/chat');
-
     } catch (err) {
       console.error(err);
-      setError('An unexpected error occurred. Please try again.');
+      setError(t.errorMessages.unexpected);
       setLoading(false);
     }
   };
@@ -54,19 +64,17 @@ export default function LoginPage() {
           <div className="flex justify-center mb-4">
             <HopeBotLogo className="w-16 h-16 text-primary" />
           </div>
-          <CardTitle className="text-2xl">Welcome Back</CardTitle>
-          <CardDescription>
-            Enter your email to access your conversations.
-          </CardDescription>
+          <CardTitle className="text-2xl">{t.title}</CardTitle>
+          <CardDescription>{t.description}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t.emailLabel}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="your@email.com"
+                placeholder={t.emailPlaceholder}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
@@ -75,13 +83,13 @@ export default function LoginPage() {
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Signing In...' : 'Continue with Email'}
+              {loading ? t.loadingButton : t.buttonText}
             </Button>
           </form>
         </CardContent>
       </Card>
       <p className="text-xs text-muted-foreground pt-8 text-center max-w-sm">
-        We use a passwordless sign-in. For this demo, we'll just use your email to identify you and save your chats, without sending a login link.
+        {t.disclaimer}
       </p>
     </main>
   );

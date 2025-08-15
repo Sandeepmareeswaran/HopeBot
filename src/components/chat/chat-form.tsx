@@ -4,6 +4,7 @@ import { type ChangeEvent, type FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Mic, SendHorizonal, Square } from 'lucide-react';
+import type { Translations } from '@/lib/translations';
 
 interface ChatFormProps {
   input: string;
@@ -12,6 +13,7 @@ interface ChatFormProps {
   handleInputChange: (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => void;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
   toggleRecording: () => void;
+  translations: Translations['chatInterface']['chatForm'];
 }
 
 export function ChatForm({
@@ -21,6 +23,7 @@ export function ChatForm({
   handleInputChange,
   handleSubmit,
   toggleRecording,
+  translations,
 }: ChatFormProps) {
   return (
     <form
@@ -31,7 +34,7 @@ export function ChatForm({
         <Textarea
           value={input}
           onChange={handleInputChange}
-          placeholder="How are you feeling today?"
+          placeholder={translations.placeholder}
           rows={1}
           className="w-full pr-24 py-3 resize-none"
           onKeyDown={(e) => {
@@ -50,7 +53,7 @@ export function ChatForm({
             variant={isRecording ? 'destructive' : 'secondary'}
             onClick={toggleRecording}
             disabled={isLoading}
-            aria-label={isRecording ? 'Stop recording' : 'Start recording'}
+            aria-label={isRecording ? translations.aria.stopRecording : translations.aria.startRecording}
           >
             {isRecording ? (
               <Square className="h-5 w-5" />
@@ -58,7 +61,7 @@ export function ChatForm({
               <Mic className="h-5 w-5" />
             )}
           </Button>
-          <Button type="submit" size="icon" disabled={!input.trim() || isLoading} aria-label="Send message">
+          <Button type="submit" size="icon" disabled={!input.trim() || isLoading} aria-label={translations.aria.sendMessage}>
             <SendHorizonal className="h-5 w-5" />
           </Button>
         </div>
