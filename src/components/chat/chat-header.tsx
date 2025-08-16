@@ -1,24 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { HopeBotLogo } from '@/components/icons/hope-bot-logo';
-import { ArrowLeft, Languages } from 'lucide-react';
-import type { Language } from '@/lib/translations';
+import { ArrowLeft } from 'lucide-react';
 
-interface ChatHeaderProps {
-  language: Language;
-  setLanguage: (language: Language) => void;
-}
-
-export function ChatHeader({ language, setLanguage }: ChatHeaderProps) {
+export function ChatHeader() {
   return (
     <header className="flex items-center justify-between p-2 md:p-4 border-b bg-card/50 backdrop-blur-sm">
       <Button asChild variant="ghost" size="icon">
@@ -30,27 +17,8 @@ export function ChatHeader({ language, setLanguage }: ChatHeaderProps) {
         <HopeBotLogo className="w-8 h-8 text-primary" />
         <span className="text-lg font-semibold text-foreground">HopeBot</span>
       </div>
-      <div className="flex items-center space-x-2 w-10">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Languages className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuRadioGroup
-              value={language}
-              onValueChange={(value) => setLanguage(value as Language)}
-            >
-              <DropdownMenuRadioItem value="English">
-                English
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="Tamil">Tamil</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="Hindi">Hindi</DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      {/* Placeholder for right side elements to keep alignment */}
+      <div className="w-10"></div>
     </header>
   );
 }

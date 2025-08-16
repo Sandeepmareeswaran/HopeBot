@@ -16,7 +16,10 @@ import { revalidatePath } from 'next/cache';
 
 // This is the primary response object returned to the frontend.
 // It matches the 'HumanLikeResponseOutput' from the AI flow.
-export type BotResponse = HumanLikeResponseOutput;
+export type BotResponse = {
+  response: string;
+  recommendations: null;
+};
 
 export interface Message {
   id: string;
@@ -24,48 +27,26 @@ export interface Message {
   content: string;
 }
 
-// A list of keywords that might indicate a user is in crisis.
-// This is a basic check and should not be considered a comprehensive safety system.
-const crisisKeywords = [
-  'suicide',
-  'kill myself',
-  'i want to die',
-  'end my life',
-  'ending it all',
-  'no reason to live',
-  'take my own life',
-  'self-harm',
-  'hopeless and want to end it',
-];
-
-function isCrisis(message: string): boolean {
-  const lowerCaseMessage = message.toLowerCase();
-  return crisisKeywords.some((keyword) => lowerCaseMessage.includes(keyword));
-}
-
 export async function handleUserMessage(
   userInput: string,
-  userEmail: string,
-  language: string
+  userEmail: string
 ): Promise<BotResponse> {
   try {
-    // Immediately check for crisis keywords. This is a critical safety feature.
-    if (isCrisis(userInput)) {
-      return {
-        response:
-          'It sounds like you are going through a difficult time. Please know that there is help available. You can connect with people who can support you by calling or texting 988 in the US and Canada, or calling 111 in the UK, anytime.',
-        recommendations: null,
-      };
+    // Call the local Flask backend
+    const backendResponse = await fetch('http://localhost:5000/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message: userInput }),
+    });
+
+    if (!backendResponse.ok) {
+      throw new Error('Failed to fetch from backend');
     }
 
-    // Call the single, consolidated AI flow.
-    const result = await humanLikeResponse({ userInput, language });
-
-    // Ensure the result and its properties are not null before returning.
-    // The AI flow is designed to always return this structure, but this is a defensive check.
-    if (!result || !result.response) {
-      throw new Error('AI flow returned an invalid response.');
-    }
+    const result = await backendResponse.json();
+    const botReply = result.reply || "Sorry, I didn't get a response.";
 
     // Save the conversation to Firestore
     const userMessage: Message = {
@@ -76,7 +57,7 @@ export async function handleUserMessage(
     const botMessage: Message = {
       id: `${Date.now()}-bot`,
       role: 'bot',
-      content: result.response, // Storing only the text content
+      content: botReply, // Storing the text content from Flask
     };
 
     const chatDocRef = doc(db, 'chats', userEmail);
@@ -97,8 +78,8 @@ export async function handleUserMessage(
     revalidatePath('/chat');
 
     return {
-      response: result.response,
-      recommendations: result.recommendations,
+      response: botReply,
+      recommendations: null,
     };
   } catch (error) {
     console.error('Fatal error in handleUserMessage:', error);
@@ -106,7 +87,7 @@ export async function handleUserMessage(
     // we return a safe, static response, ensuring the server action never crashes.
     return {
       response:
-        "I'm having a little trouble formulating a full response right now, but I'm still here to listen. Could you tell me more about what's on your mind?",
+        "I'm having a little trouble connecting to the backend right now. Please make sure the Python server is running.",
       recommendations: null,
     };
   }

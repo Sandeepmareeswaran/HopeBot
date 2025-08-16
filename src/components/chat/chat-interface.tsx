@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { handleUserMessage } from '@/app/actions';
 import { MessageList } from './message-list';
 import { ChatForm } from './chat-form';
-import type { Language, Translations } from '@/lib/translations';
+import type { Translations } from '@/lib/translations';
 
 export interface Message {
   id: string;
@@ -31,7 +31,6 @@ interface ChatInterfaceProps {
   userEmail: string;
   initialMessages: Message[];
   isLoadingHistory: boolean;
-  language: Language;
   translations: Translations['chatInterface'];
 }
 
@@ -39,7 +38,6 @@ export function ChatInterface({
   userEmail,
   initialMessages,
   isLoadingHistory,
-  language,
   translations
 }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
@@ -131,7 +129,7 @@ export function ChatInterface({
     };
     setMessages((prev) => [...prev, userMessage]);
 
-    const result = await handleUserMessage(userInput, userEmail, language);
+    const result = await handleUserMessage(userInput, userEmail);
 
     if (!result || !result.response) {
       toast({
@@ -148,34 +146,6 @@ export function ChatInterface({
     const botMessageContent = (
       <div>
         <p>{result.response}</p>
-        {result.recommendations && (
-          <div className="mt-4 space-y-3">
-            {result.recommendations.calmingExercises?.length > 0 && (
-              <div>
-                <h4 className="font-semibold text-sm mb-1">
-                  {translations.recommendations.calmingExercises}
-                </h4>
-                <ul className="list-disc list-inside text-sm space-y-1">
-                  {result.recommendations.calmingExercises.map((ex, i) => (
-                    <li key={`ex-${i}`}>{ex}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {result.recommendations.cbtPrompts?.length > 0 && (
-              <div className="mt-3">
-                <h4 className="font-semibold text-sm mb-1">
-                  {translations.recommendations.cbtPrompts}
-                </h4>
-                <ul className="list-disc list-inside text-sm space-y-1">
-                  {result.recommendations.cbtPrompts.map((p, i) => (
-                    <li key={`p-${i}`}>{p}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
       </div>
     );
 
