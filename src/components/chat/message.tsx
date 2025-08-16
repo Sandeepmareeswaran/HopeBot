@@ -52,7 +52,7 @@ export function Message({ message, isLoading = false, translations }: MessagePro
       {isBot && (
         <Avatar className="h-9 w-9 border">
           <div className="flex h-full w-full items-center justify-center bg-card">
-            <HopeBotLogo className="p-1.5 text-primary" />
+            <HopeBotLogo className="p-1.5 bg-gradient-blue-glow from-blue-500 to-cyan-400 text-transparent bg-clip-text" />
           </div>
           <AvatarFallback>HB</AvatarFallback>
         </Avatar>

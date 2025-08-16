@@ -6,6 +6,7 @@ import { HopeBotLogo } from '@/components/icons/hope-bot-logo';
 import { ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { getTranslations, type Translations } from '@/lib/translations';
+import { cn } from '@/lib/utils';
 
 export default function LandingPage() {
   const href = '/login';
@@ -23,8 +24,13 @@ export default function LandingPage() {
   return (
     <main className="flex h-full w-full flex-col items-center justify-center bg-background p-4">
       <div className="flex flex-col items-center justify-center text-center space-y-6 max-w-lg">
-        <HopeBotLogo className="w-24 h-24 text-primary" />
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
+        <HopeBotLogo className="w-24 h-24 bg-gradient-blue-glow from-blue-500 to-cyan-400 text-transparent bg-clip-text" />
+        <h1
+          className={cn(
+            'text-4xl md:text-5xl font-bold tracking-tight',
+            'bg-gradient-blue-glow from-blue-500 to-cyan-400 text-transparent bg-clip-text'
+          )}
+        >
           {t.title}
         </h1>
         <p className="text-lg text-muted-foreground">{t.subtitle}</p>

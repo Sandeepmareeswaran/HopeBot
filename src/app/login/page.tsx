@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { getTranslations, type Translations } from '@/lib/translations';
+import { cn } from '@/lib/utils';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -62,9 +63,16 @@ export default function LoginPage() {
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <HopeBotLogo className="w-16 h-16 text-primary" />
+            <HopeBotLogo className="w-16 h-16 bg-gradient-blue-glow from-blue-500 to-cyan-400 text-transparent bg-clip-text" />
           </div>
-          <CardTitle className="text-2xl">{t.title}</CardTitle>
+          <CardTitle
+            className={cn(
+              'text-2xl',
+              'bg-gradient-blue-glow from-blue-500 to-cyan-400 text-transparent bg-clip-text'
+            )}
+          >
+            {t.title}
+          </CardTitle>
           <CardDescription>{t.description}</CardDescription>
         </CardHeader>
         <CardContent>

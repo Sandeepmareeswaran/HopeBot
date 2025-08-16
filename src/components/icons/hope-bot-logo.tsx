@@ -13,12 +13,18 @@ export function HopeBotLogo(props: SVGProps<SVGSVGElement>) {
       strokeLinejoin="round"
       {...props}
     >
-      <path d="M12 8V4H8" />
-      <rect width="16" height="12" x="4" y="8" rx="2" />
-      <path d="M2 14h2" />
-      <path d="M20 14h2" />
-      <path d="M15 13v2" />
-      <path d="M9 13v2" />
+      <defs>
+        <linearGradient id="blue-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style={{ stopColor: 'hsl(var(--primary))' }} />
+          <stop offset="100%" style={{ stopColor: 'rgb(0, 255, 255)' }} />
+        </linearGradient>
+      </defs>
+      <path d="M12 8V4H8" stroke="url(#blue-gradient)" />
+      <rect width="16" height="12" x="4" y="8" rx="2" stroke="url(#blue-gradient)" />
+      <path d="M2 14h2" stroke="url(#blue-gradient)" />
+      <path d="M20 14h2" stroke="url(#blue-gradient)" />
+      <path d="M15 13v2" stroke="url(#blue-gradient)" />
+      <path d="M9 13v2" stroke="url(#blue-gradient)" />
     </svg>
   );
 }

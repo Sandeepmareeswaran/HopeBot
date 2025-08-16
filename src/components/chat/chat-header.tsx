@@ -11,13 +11,17 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import type { Language } from '@/lib/translations';
+import { cn } from '@/lib/utils';
 
 interface ChatHeaderProps {
   currentLanguage: Language;
   onLanguageChange: (language: Language) => void;
 }
 
-export function ChatHeader({ currentLanguage, onLanguageChange }: ChatHeaderProps) {
+export function ChatHeader({
+  currentLanguage,
+  onLanguageChange,
+}: ChatHeaderProps) {
   return (
     <header className="flex items-center justify-between p-2 md:p-4 border-b bg-card/50 backdrop-blur-sm">
       <Button asChild variant="ghost" size="icon">
@@ -26,8 +30,15 @@ export function ChatHeader({ currentLanguage, onLanguageChange }: ChatHeaderProp
         </Link>
       </Button>
       <div className="flex items-center space-x-2">
-        <HopeBotLogo className="w-8 h-8 text-primary" />
-        <span className="text-lg font-semibold text-foreground">HopeBot</span>
+        <HopeBotLogo className="w-8 h-8 bg-gradient-blue-glow from-blue-500 to-cyan-400 text-transparent bg-clip-text" />
+        <span
+          className={cn(
+            'text-lg font-semibold',
+            'bg-gradient-blue-glow from-blue-500 to-cyan-400 text-transparent bg-clip-text'
+          )}
+        >
+          HopeBot
+        </span>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
