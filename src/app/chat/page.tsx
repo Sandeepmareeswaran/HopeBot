@@ -14,12 +14,13 @@ export default function ChatPage() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
+  const [language, setLanguage] = useState<Language>('English');
   const [t, setT] = useState<Translations>(getTranslations('English'));
   const router = useRouter();
 
   useEffect(() => {
-    // For simplicity, we are defaulting to English now.
-    const storedLang = 'English' as Language;
+    const storedLang = (localStorage.getItem('hopebot-language') as Language) || 'English';
+    setLanguage(storedLang);
     setT(getTranslations(storedLang));
 
     const email = localStorage.getItem('userEmail');
@@ -42,6 +43,12 @@ export default function ChatPage() {
     }
   }, [userEmail]);
 
+  const handleLanguageChange = (lang: Language) => {
+    setLanguage(lang);
+    setT(getTranslations(lang));
+    localStorage.setItem('hopebot-language', lang);
+  };
+
   if (!userEmail) {
     // Render a loading state or redirect will be handled by the effect
     return (
@@ -57,6 +64,7 @@ export default function ChatPage() {
 
   const handleLogout = () => {
     localStorage.removeItem('userEmail');
+    localStorage.removeItem('hopebot-language');
     router.push('/login');
   };
 
@@ -69,12 +77,16 @@ export default function ChatPage() {
         translations={t.chatSidebar}
       />
       <div className="flex flex-1 flex-col">
-        <ChatHeader />
+        <ChatHeader 
+          currentLanguage={language}
+          onLanguageChange={handleLanguageChange}
+        />
         <div className="flex-1 overflow-hidden">
           <ChatInterface
             userEmail={userEmail}
             initialMessages={messages}
             isLoadingHistory={loading}
+            language={language}
             translations={t.chatInterface}
           />
         </div>

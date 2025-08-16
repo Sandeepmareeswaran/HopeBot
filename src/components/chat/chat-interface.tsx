@@ -11,7 +11,13 @@ import { useToast } from '@/hooks/use-toast';
 import { handleUserMessage } from '@/app/actions';
 import { MessageList } from './message-list';
 import { ChatForm } from './chat-form';
-import type { Translations } from '@/lib/translations';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import type { Language, Translations } from '@/lib/translations';
 
 export interface Message {
   id: string;
@@ -31,6 +37,7 @@ interface ChatInterfaceProps {
   userEmail: string;
   initialMessages: Message[];
   isLoadingHistory: boolean;
+  language: Language;
   translations: Translations['chatInterface'];
 }
 
@@ -38,7 +45,8 @@ export function ChatInterface({
   userEmail,
   initialMessages,
   isLoadingHistory,
-  translations
+  language,
+  translations,
 }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState('');
@@ -63,8 +71,13 @@ export function ChatInterface({
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
-      // TODO: Make speech recognition language dynamic
-      recognition.lang = 'en-US';
+      
+      const langCode = {
+        'English': 'en-US',
+        'Tamil': 'ta-IN',
+        'Hindi': 'hi-IN'
+      }
+      recognition.lang = langCode[language];
 
       recognition.onresult = (event) => {
         let interimTranscript = '';
@@ -97,7 +110,7 @@ export function ChatInterface({
     } else {
       console.warn('Speech Recognition not supported in this browser.');
     }
-  }, [toast, translations]);
+  }, [toast, translations, language]);
 
   const toggleRecording = () => {
     if (isRecording) {
@@ -129,7 +142,7 @@ export function ChatInterface({
     };
     setMessages((prev) => [...prev, userMessage]);
 
-    const result = await handleUserMessage(userInput, userEmail);
+    const result = await handleUserMessage(userInput, userEmail, language);
 
     if (!result || !result.response) {
       toast({
@@ -146,6 +159,40 @@ export function ChatInterface({
     const botMessageContent = (
       <div>
         <p>{result.response}</p>
+        {result.recommendations && (
+          <Accordion type="single" collapsible className="w-full mt-4">
+            {result.recommendations.calmingExercises.length > 0 && (
+              <AccordionItem value="calming-exercises">
+                <AccordionTrigger>
+                  {translations.recommendations.calmingExercises}
+                </AccordionTrigger>
+                <AccordionContent>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {result.recommendations.calmingExercises.map(
+                      (exercise, index) => (
+                        <li key={`calm-${index}`}>{exercise}</li>
+                      )
+                    )}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            )}
+            {result.recommendations.cbtPrompts.length > 0 && (
+              <AccordionItem value="cbt-prompts">
+                <AccordionTrigger>
+                  {translations.recommendations.cbtPrompts}
+                </AccordionTrigger>
+                <AccordionContent>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {result.recommendations.cbtPrompts.map((prompt, index) => (
+                      <li key={`cbt-${index}`}>{prompt}</li>
+                    ))}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            )}
+          </Accordion>
+        )}
       </div>
     );
 

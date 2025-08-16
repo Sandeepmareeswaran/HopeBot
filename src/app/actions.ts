@@ -16,10 +16,7 @@ import { revalidatePath } from 'next/cache';
 
 // This is the primary response object returned to the frontend.
 // It matches the 'HumanLikeResponseOutput' from the AI flow.
-export type BotResponse = {
-  response: string;
-  recommendations: null;
-};
+export type BotResponse = HumanLikeResponseOutput;
 
 export interface Message {
   id: string;
@@ -29,24 +26,18 @@ export interface Message {
 
 export async function handleUserMessage(
   userInput: string,
-  userEmail: string
+  userEmail: string,
+  language: string
 ): Promise<BotResponse> {
   try {
-    // Call the local Flask backend
-    const backendResponse = await fetch('http://localhost:5000/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ message: userInput }),
+    const result = await humanLikeResponse({
+      userInput,
+      language,
     });
 
-    if (!backendResponse.ok) {
-      throw new Error('Failed to fetch from backend');
+    if (!result || !result.response) {
+      throw new Error('AI response was empty or invalid.');
     }
-
-    const result = await backendResponse.json();
-    const botReply = result.reply || "Sorry, I didn't get a response.";
 
     // Save the conversation to Firestore
     const userMessage: Message = {
@@ -57,7 +48,7 @@ export async function handleUserMessage(
     const botMessage: Message = {
       id: `${Date.now()}-bot`,
       role: 'bot',
-      content: botReply, // Storing the text content from Flask
+      content: result.response, // Storing only the text content
     };
 
     const chatDocRef = doc(db, 'chats', userEmail);
@@ -77,17 +68,14 @@ export async function handleUserMessage(
 
     revalidatePath('/chat');
 
-    return {
-      response: botReply,
-      recommendations: null,
-    };
+    return result;
   } catch (error) {
     console.error('Fatal error in handleUserMessage:', error);
     // This is the ultimate fallback. If anything in the try block fails,
     // we return a safe, static response, ensuring the server action never crashes.
     return {
       response:
-        "I'm having a little trouble connecting to the backend right now. Please make sure the Python server is running.",
+        "I'm having a little trouble formulating a full response right now, but I'm still here to listen. Could you tell me more about what's on your mind?",
       recommendations: null,
     };
   }
