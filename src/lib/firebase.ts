@@ -5,20 +5,28 @@ import { getFirestore } from 'firebase/firestore';
 
 // Your Firebase configuration, adapted for web
 const firebaseConfig = {
-  apiKey: "AIzaSyA69rIy0tX917Vi1Tfl9EG6pa22vML8DSM",
-  authDomain: "goodpsyche-2365e.firebaseapp.com",
-  projectId: "goodpsyche-2365e",
-  storageBucket: "goodpsyche-2365e.appspot.com",
-  messagingSenderId: "24288999506",
-  appId: "1:24288999506:web:1291c6ecb0aad23fc0478b",
-  measurementId: "G-1NBPFDKRWR",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase
-// We check if the app is already initialized to avoid errors in Next.js hot-reloading environments.
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+// Initialize Firebase for client-side
+function initializeClientApp() {
+    if (getApps().length === 0) {
+        return initializeApp(firebaseConfig);
+    } else {
+        return getApp();
+    }
+}
+
+const app = initializeClientApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
+
 
 // Export initialized services
 export { app, auth, db };
