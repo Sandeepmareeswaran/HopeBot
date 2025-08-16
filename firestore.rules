@@ -2,8 +2,8 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow users to read and write only their own chat documents.
-    // The document ID must match the user's email, which we use as a UID.
+    // Only allow users to read and write their own chat data.
+    // The document ID must match the user's email address.
     match /chats/{userEmail} {
       allow read, write: if request.auth != null && request.auth.token.email == userEmail;
     }
