@@ -14,16 +14,8 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase for client-side
-function initializeClientApp() {
-    if (getApps().length === 0) {
-        return initializeApp(firebaseConfig);
-    } else {
-        return getApp();
-    }
-}
-
-const app = initializeClientApp();
+// Initialize Firebase for client-side, ensuring no re-initialization
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 
