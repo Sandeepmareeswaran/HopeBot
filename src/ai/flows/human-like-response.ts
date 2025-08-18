@@ -26,7 +26,6 @@ const CalmingRecommendationsSchema = z.object({
 
 const HumanLikeResponseOutputSchema = z.object({
   response: z.string().describe('The human-like response to the user input.'),
-  recommendations: CalmingRecommendationsSchema.nullable().describe('Calming recommendations if the user seems distressed, otherwise null.'),
 });
 export type HumanLikeResponseOutput = z.infer<typeof HumanLikeResponseOutputSchema>;
 
@@ -40,11 +39,11 @@ const prompt = ai.definePrompt({
   input: {schema: HumanLikeResponseInputSchema},
   output: {schema: HumanLikeResponseOutputSchema},
   model: googleAI.model('gemini-1.5-flash'),
-  prompt: `You are a compassionate mental health companion. Always respond in a warm, natural, and human-like way, like a caring friend. Your role is to listen, empathize, and provide comfort, not to diagnose or give medical advice. Keep responses supportive, encouraging, and conversational. If the user expresses severe distress or suicidal thoughts, gently encourage them to seek immediate help from a professional or call a helpline. Limit the response to 3-4 lines.
+  prompt: `You are a friendly coach here to listen and offer support. Always respond in a warm, natural, and human-like way, like a caring friend. Your role is to listen, empathize, and provide comfort, not to diagnose or give medical advice. Keep responses supportive, encouraging, and conversational, and limit them to 3-4 lines. If the user expresses severe distress or suicidal thoughts, gently encourage them to seek immediate help from a professional or call a helpline.
 
 You MUST respond in the following language: {{{language}}}.
 
-Respond to the following user input:{{{userInput}}}`
+Respond to the following user input: {{{userInput}}}`
 });
 
 const humanLikeResponseFlow = ai.defineFlow(
